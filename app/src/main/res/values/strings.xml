@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">DayVee</string>
+    <string name="app_name" translatable="false">DayVee</string>
+    <string name="app_title" translatable="false">Effective Task Management</string>
+    <string name="intro_text">Organize your tasks effortlessly and stay focused throughout the day. Manage your priorities, set deadlines, and track progress to achieve your goals faster and with less stress.</string>
+    <string name="get_started">Get started</string>
+    <string name="performance">Performance</string>
+    <string name="today">Today</string>
 </resources>

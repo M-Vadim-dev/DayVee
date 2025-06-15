@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DayVee</string>
+    <string name="app_title">Эффективное управление задачами</string>
+    <string name="intro_text">Организуйте свои задачи без усилий и сохраняйте концентрацию в течение всего дня. Управляйте приоритетами, ставьте дедлайны и отслеживайте прогресс, чтобы достигать целей быстрее и с меньшим стрессом.</string>
+    <string name="get_started">Начать</string>
+    <string name="performance">Производительность</string>
+    <string name="today">Сегодня</string>
+</resources>
