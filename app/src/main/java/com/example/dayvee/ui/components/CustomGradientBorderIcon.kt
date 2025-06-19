@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 fun CustomGradientBorderIcon(
     modifier: Modifier = Modifier,
     borderWidth: Dp = 3.dp,
-    size: Dp = 48.dp,
+    size: Dp = 52.dp,
     gradientCircle: Brush,
     gradientBorder: Brush = Brush.verticalGradient(
         colors = listOf(Color.Transparent, Color.Transparent)

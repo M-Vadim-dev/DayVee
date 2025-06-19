@@ -21,6 +21,7 @@ import com.example.dayvee.ui.theme.MediumPurple
 
 @Composable
 fun CustomCircularProgress(
+    modifier: Modifier,
     progress: Float,
     size: Dp = 48.dp,
     strokeWidth: Dp = 4.dp,
@@ -32,7 +33,7 @@ fun CustomCircularProgress(
     )
 
     Box(
-        modifier = Modifier.size(size),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center
     ) {
         Canvas(modifier = Modifier.size(size - strokeWidth)) {

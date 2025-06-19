@@ -6,4 +6,21 @@
     <string name="get_started">Начать</string>
     <string name="performance">Производительность</string>
     <string name="today">Сегодня</string>
+    <string name="select_date">Выберите дату</string>
+    <string name="edit">Редактировать</string>
+    <string name="add_task">Добавить задачу</string>
+    <string name="no_tasks">Нет задач</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_calendar">Календарь</string>
+    <string name="nav_stats">Статистика</string>
+    <string name="nav_setting">Настройки</string>
+    <string name="error_invalid_end_time_format">Неверный формат времени окончания.</string>
+    <string name="greeting_morning">Доброе утро</string>
+    <string name="greeting_afternoon">Добрый день</string>
+    <string name="greeting_evening">Добрый вечер</string>
+    <string name="greeting_night">Доброй ночи</string>
+    <string name="delete">Удалить</string>
+    <string name="error_start_time_in_past">Нельзя создать задачу в прошлом времени.</string>
+    <string name="error_end_time_before_start">Время окончания не может быть раньше начала.</string>
+    <string name="error_invalid_start_time_format">Неверный формат времени начала.</string>
 </resources>

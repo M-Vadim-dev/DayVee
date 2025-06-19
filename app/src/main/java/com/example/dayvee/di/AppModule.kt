@@ -1,17 +1,18 @@
 package com.example.dayvee.di
 
 import android.content.Context
-import com.example.dayvee.data.local.db.AppDataBase
 import com.example.dayvee.data.local.dao.TaskDao
+import com.example.dayvee.data.local.dao.UserDao
+import com.example.dayvee.data.local.db.AppDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Qualifier
 import javax.inject.Singleton
-import kotlinx.coroutines.Dispatchers
-import kotlin.coroutines.CoroutineContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,7 +25,7 @@ class AppModule {
     @IoDispatcher
     @Provides
     @Singleton
-    fun provideIoDispatcher(): CoroutineContext = Dispatchers.IO
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Singleton
@@ -33,6 +34,9 @@ class AppModule {
 
     @Provides
     fun provideTaskDao(appDatabase: AppDataBase): TaskDao = appDatabase.taskDao()
+
+    @Provides
+    fun provideUserDao(appDatabase: AppDataBase): UserDao = appDatabase.userDao()
 
 //    @Provides
 //    @Singleton

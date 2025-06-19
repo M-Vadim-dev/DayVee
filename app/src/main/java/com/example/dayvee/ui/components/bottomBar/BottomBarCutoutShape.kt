@@ -1,4 +1,4 @@
-package com.example.dayvee.ui.components
+package com.example.dayvee.ui.components.bottomBar
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
@@ -33,22 +33,22 @@ class BottomBarCutoutShape(
         val cutoutLeft = cutoutCenterX - cutoutRadius
         val cutoutRight = cutoutCenterX + cutoutRadius
 
-        path.lineTo(cutoutLeft - cornerRadius / 2f, 0f)
+        path.lineTo(cutoutLeft - cornerRadius / 3f, 0f)
 
         path.quadraticTo(
-            cutoutLeft, 0f,
+            cutoutLeft-3, 0f, //
             cutoutLeft, cornerRadius / 2f
         )
 
         path.cubicTo(
             cutoutLeft + cutoutRadius * 0.3f, cutoutRadius * 1.4f,
-            cutoutRight - cutoutRadius * 0.3f, cutoutRadius * 1.4f,
+            cutoutRight - cutoutRadius * 0.3f, cutoutRadius * 1.4f, //
             cutoutRight, cornerRadius / 2f
         )
 
         path.quadraticTo(
-            cutoutRight, 0f,
-            cutoutRight + cornerRadius / 2f, 0f
+            cutoutRight+3, 0f, //
+            cutoutRight + cornerRadius / 3f, 0f
         )
 
         path.arcTo(

@@ -1,6 +1,7 @@
-package com.example.dayvee.ui.screens.home
+package com.example.dayvee.ui.screens.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,38 +13,41 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dayvee.ui.components.CustomCircularProgress
-import com.example.dayvee.ui.theme.DarkSlateGray
-import com.example.dayvee.ui.theme.GhostWhite
 import com.example.dayvee.ui.theme.Montserrat
-import com.example.dayvee.ui.theme.SlateGray
 
 @Composable
 fun TaskItem(
     textTitle: String,
-    text: String,
+    textDescription: String,
+    timeStart: String,
+    timeEnd: String,
+    progress: Float,
     isCompleted: Boolean,
-    onCheckClick: () -> Unit = {}
+    onProgressClick: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = DarkSlateGray,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(horizontal = 16.dp, vertical = 4.dp),
@@ -56,7 +60,7 @@ fun TaskItem(
             Icon(
                 imageVector = Icons.Filled.AccountBox,
                 contentDescription = null,
-                tint = GhostWhite,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(38.dp),
             )
 
@@ -79,13 +83,13 @@ fun TaskItem(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
-                    text = text,
+                    text = textDescription,
                     style = TextStyle(
                         fontFamily = Montserrat,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
                     ),
-                    color = SlateGray,
+                    color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Row(
@@ -94,21 +98,21 @@ fun TaskItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Alarm Icon",
-                        tint = SlateGray,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(16.dp)
                     )
 
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = "10:00 - 11:30 pm",
+                        text = "$timeStart - $timeEnd",
                         style = TextStyle(
                             fontFamily = Montserrat,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp,
                         ),
-                        color = SlateGray,
+                        color = MaterialTheme.colorScheme.outline,
                     )
                 }
             }
@@ -116,8 +120,11 @@ fun TaskItem(
             Spacer(modifier = Modifier.width(16.dp))
 
             CustomCircularProgress(
-                progress = (0.65f - 0.65f * 0.4f) + Math.random().toFloat() * (0.65f * 0.4f * 2),
-                size = 42.dp
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable { onProgressClick },  //todo
+                progress = progress,
+                size = 50.dp
             )
         }
     }
