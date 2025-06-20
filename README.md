@@ -18,3 +18,5 @@
 
 Интерфейс простой и стильный.
 Простой инструмент — для глубокого контроля над временем.
+
+![DayVee UI]([https://disk.yandex.ru/i/whCekXTK5dkmrQ](https://disk.yandex.ru/i/whCekXTK5dkmrQ))
