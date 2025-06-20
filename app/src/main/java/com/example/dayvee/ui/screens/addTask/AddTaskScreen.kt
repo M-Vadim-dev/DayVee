@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,7 +47,8 @@ fun AddTaskScreen(
     onDismiss: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val validationError by viewModel.validationErrorFlow.collectAsState(initial = null)
+    val validationError by viewModel.validationError.collectAsState(initial = null)
+    val taskCreated by viewModel.taskCreated.collectAsState()
 
     val validationErrorString = validationError?.let { error ->
         when (error) {
@@ -57,8 +59,21 @@ fun AddTaskScreen(
         }
     }
 
+    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(validationErrorString) {
-        validationErrorString?.let { snackBarHostState.showSnackbar(it) }
+        validationErrorString?.let {
+            focusManager.clearFocus()
+            snackBarHostState.showSnackbar(it)
+            viewModel.clearValidationError()
+        }
+    }
+
+    LaunchedEffect(taskCreated) {
+        if (taskCreated) {
+            viewModel.acknowledgeTaskCreated()
+            onDismiss()
+        }
     }
 
     AddTaskScreenContent(
@@ -69,10 +84,7 @@ fun AddTaskScreen(
         onStartMinuteChange = viewModel::onStartMinuteChange,
         onEndHourChange = viewModel::onEndHourChange,
         onEndMinuteChange = viewModel::onEndMinuteChange,
-        onAddTaskClick = {
-            viewModel.createTask()
-            onDismiss()
-        },
+        onAddTaskClick = { viewModel.createTask() },
     )
 }
 
@@ -265,18 +277,18 @@ fun AddTaskScreenContent(
 fun AddTaskScreenContentPreview() {
     AddTaskScreenContent(
         uiState = AddTaskScreenUiState(
-        title = "Workout",
-        description = "Morning running and stretch",
-        startHour = "07",
-        startMinute = "30",
-        endHour = "08",
-        endMinute = "15",
-        isStartHourValid = true,
-        isStartMinuteValid = true,
-        isEndHourValid = true,
-        isEndMinuteValid = true,
-        isAddEnabled = true
-    ),
+            title = "Workout",
+            description = "Morning running and stretch",
+            startHour = "07",
+            startMinute = "30",
+            endHour = "08",
+            endMinute = "15",
+            isStartHourValid = true,
+            isStartMinuteValid = true,
+            isEndHourValid = true,
+            isEndMinuteValid = true,
+            isAddEnabled = true
+        ),
         onTitleChange = {},
         onDescriptionChange = {},
         onStartHourChange = {},

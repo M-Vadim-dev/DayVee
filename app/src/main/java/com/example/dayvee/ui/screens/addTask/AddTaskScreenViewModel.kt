@@ -11,11 +11,9 @@ import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
 import com.example.dayvee.utils.TimeUtils.convertToMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -54,8 +52,11 @@ class AddTaskScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AddTaskScreenUiState())
     val uiState: StateFlow<AddTaskScreenUiState> = _uiState.asStateFlow()
 
-    private val _validationErrorChannel = Channel<TaskValidationError>(Channel.BUFFERED)
-    val validationErrorFlow = _validationErrorChannel.receiveAsFlow()
+    private val _validationError = MutableStateFlow<TaskValidationError?>(null)
+    val validationError: StateFlow<TaskValidationError?> = _validationError.asStateFlow()
+
+    private val _taskCreated = MutableStateFlow(false)
+    val taskCreated: StateFlow<Boolean> = _taskCreated.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -67,7 +68,7 @@ class AddTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun createTask() {
+    internal fun createTask() {
         viewModelScope.launch {
             val state = uiState.value
 
@@ -81,15 +82,25 @@ class AddTaskScreenViewModel @Inject constructor(
             val endMinute = state.endMinute
 
             val selectedDate = state.selectedDate
-            val startTime = convertToMillis(selectedDate, startHour, startMinute)
-            val endTime = convertToMillis(selectedDate, endHour, endMinute)
+            val startMillis = convertToMillis(selectedDate, startHour, startMinute)
+            val endMillis = convertToMillis(selectedDate, endHour, endMinute)
             val nowDate = LocalDate.now()
             val nowMillis = System.currentTimeMillis()
 
             val isDone = when {
                 selectedDate.isBefore(nowDate) -> true
-                selectedDate.isEqual(nowDate) && endTime < nowMillis -> true
+                selectedDate.isEqual(nowDate) && endMillis < nowMillis -> true
                 else -> false
+            }
+
+            if (selectedDate.isEqual(LocalDate.now()) && startMillis < nowMillis) {
+                _validationError.value = TaskValidationError.StartTimeInPast
+                return@launch
+            }
+
+            if (startMillis > endMillis) {
+                _validationError.value = TaskValidationError.EndTimeBeforeStart
+                return@launch
             }
 
             val newTask = Task(
@@ -97,12 +108,13 @@ class AddTaskScreenViewModel @Inject constructor(
                 title = title,
                 description = description,
                 date = selectedDate,
-                startTime = startTime,
-                endTime = endTime,
+                startTime = startMillis,
+                endTime = endMillis,
                 isDone = isDone
             )
 
             taskRepository.addTask(newTask)
+            _taskCreated.value = true
 
             _uiState.update {
                 it.copy(
@@ -117,17 +129,25 @@ class AddTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun onTitleChange(title: String) {
+    internal fun clearValidationError() {
+        _validationError.value = null
+    }
+
+    internal fun acknowledgeTaskCreated() {
+        _taskCreated.value = false
+    }
+
+    internal fun onTitleChange(title: String) {
         _uiState.update { it.copy(title = title) }
         validate(_uiState.value.copy(title = title))
     }
 
-    fun onDescriptionChange(description: String) {
+    internal fun onDescriptionChange(description: String) {
         _uiState.update { it.copy(description = description) }
         validate(_uiState.value.copy(description = description))
     }
 
-    fun onStartHourChange(newValue: String) {
+    internal fun onStartHourChange(newValue: String) {
         if (newValue.length <= 2 && newValue.all { it.isDigit() }) {
             val hourInt = newValue.toIntOrNull()
             val isValid = hourInt != null && hourInt in 0..23
@@ -136,7 +156,7 @@ class AddTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun onStartMinuteChange(newValue: String) {
+    internal fun onStartMinuteChange(newValue: String) {
         if (newValue.length <= 2 && newValue.all { it.isDigit() }) {
             val minuteInt = newValue.toIntOrNull()
             val isValid = minuteInt != null && minuteInt in 0..59
@@ -145,7 +165,7 @@ class AddTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEndHourChange(newValue: String) {
+    internal fun onEndHourChange(newValue: String) {
         if (newValue.length <= 2 && newValue.all { it.isDigit() }) {
             val hourInt = newValue.toIntOrNull()
             val isValid = hourInt != null && hourInt in 0..23
@@ -154,7 +174,7 @@ class AddTaskScreenViewModel @Inject constructor(
         }
     }
 
-    fun onEndMinuteChange(newValue: String) {
+    internal fun onEndMinuteChange(newValue: String) {
         if (newValue.length <= 2 && newValue.all { it.isDigit() }) {
             val minuteInt = newValue.toIntOrNull()
             val isValid = minuteInt != null && minuteInt in 0..59

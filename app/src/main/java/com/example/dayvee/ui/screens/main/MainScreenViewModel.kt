@@ -1,6 +1,5 @@
 package com.example.dayvee.ui.screens.main
 
-import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dayvee.data.SharedDateRepository
@@ -10,7 +9,6 @@ import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
 import com.example.dayvee.domain.usecase.GreetingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,27 +19,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import javax.inject.Inject
-
-@Immutable
-data class MainScreenUiState(
-    val activeUser: User? = null,
-    val greeting: String = "",
-    val today: LocalDate = LocalDate.now(),
-    val tasks: List<Task> = emptyList(),
-    val selectedTask: Task? = null,
-    val selectedDate: LocalDate = LocalDate.now(),
-    val currentMonth: YearMonth = YearMonth.from(LocalDate.now()),
-    val isDatePickerVisible: Boolean = false,
-    val isToday: Boolean = false,
-    val isCompleted: Boolean = false,
-    val tasksProgress: Map<Int, TaskProgressInfo> = emptyMap(),
-)
-
-data class TaskProgressInfo(
-    val taskId: Int,
-    val progress: Float,
-    val remainingMillis: Long,
-)
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
@@ -54,7 +31,7 @@ class MainScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MainScreenUiState())
     val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
 
-    private var progressJob: Job? = null
+    private val _tasks = MutableStateFlow<List<Task>>(emptyList())
 
     init {
         viewModelScope.launch {
@@ -66,97 +43,78 @@ class MainScreenViewModel @Inject constructor(
                 question = "",
                 answer = ""
             )
-            val activeUser = userRepository.initUserIfNotExists(defaultUser)
+            userRepository.initUserIfNotExists(defaultUser)
             updateGreeting()
 
-            sharedDateRepository.selectedDate
-                .collectLatest { selectedDate ->
-                    taskRepository.getTasksForDate(activeUser.uid, selectedDate).collect { tasks ->
+            sharedDateRepository.selectedDate.collectLatest { selectedDate ->
+                val activeUser = userRepository.getActiveUser() ?: return@collectLatest
+                val tasksFlow = taskRepository.getTasksForDate(activeUser.uid, selectedDate)
+                tasksFlow.collect { tasks ->
+                    val now = System.currentTimeMillis()
+                    val updatedTasks = tasks.map { task ->
+                        task.copy(isDone = now > task.endTime)
+                    }
 
-                        val now = System.currentTimeMillis()
-                        val updatedTasks = tasks.map { task ->
-                            task.copy(isDone = now > task.endTime)
-                        }
+                    _tasks.value = updatedTasks
 
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                activeUser = activeUser,
-                                selectedDate = selectedDate,
-                                tasks = updatedTasks,
-                                isToday = selectedDate == LocalDate.now(),
-                            )
-                        }
-
-                        startProgressTracking(updatedTasks)
+                    _uiState.update {
+                        it.copy(
+                            activeUser = activeUser,
+                            selectedDate = selectedDate,
+                            tasks = updatedTasks,
+                            isToday = selectedDate == LocalDate.now()
+                        )
                     }
                 }
-        }
-    }
-
-    private fun startProgressTracking(tasks: List<Task>) {
-        progressJob?.cancel()
-        if (tasks.isEmpty()) {
-            _uiState.update { it.copy(tasksProgress = emptyMap()) }
-            return
+            }
         }
 
-        progressJob = viewModelScope.launch {
-            while (true) {
-                val nowMillis = System.currentTimeMillis()
+        viewModelScope.launch {
+            _tasks.collectLatest { tasks ->
+                if (tasks.isEmpty()) {
+                    _uiState.update { it.copy(tasksProgress = emptyMap()) }
+                    return@collectLatest
+                }
 
-                val progressMap = mutableMapOf<Int, TaskProgressInfo>()
-
-                tasks.forEach { task ->
-                    val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
-                        // Если задача ещё не отмечена как выполненная, но по времени уже завершилась
-                        if (!task.isDone) {
-                            viewModelScope.launch {
-                                taskRepository.updateTask(task.copy(isDone = true))
+                while (true) {
+                    val nowMillis = System.currentTimeMillis()
+                    val progressMap = tasks.associate { task ->
+                        val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
+                            TaskProgressInfo(task.id, 1f, 0L).also {
+                                if (!task.isDone) {
+                                    viewModelScope.launch {
+                                        taskRepository.updateTask(task.copy(isDone = true))
+                                    }
+                                }
                             }
+                        } else {
+                            val startMillis = task.startTime
+                            val endMillis = task.endTime
+                            val total = (endMillis - startMillis).coerceAtLeast(1L)
+                            val elapsed = (nowMillis - startMillis).coerceIn(0L, total)
+                            val progress = elapsed.toFloat() / total
+                            val remaining = (endMillis - nowMillis).coerceAtLeast(0L)
+
+                            TaskProgressInfo(task.id, progress, remaining)
                         }
 
-                        TaskProgressInfo(
-                            taskId = task.id,
-                            progress = 1f,
-                            remainingMillis = 0L
-                        )
-                    } else {
-                        val startMillis = task.startTime
-                        val endMillis = task.endTime
-                        val totalDuration = (endMillis - startMillis).coerceAtLeast(1L)
-                        val elapsed = (nowMillis - startMillis).coerceIn(0L, totalDuration)
-
-                        val progress = elapsed.toFloat() / totalDuration
-                        val remainingMillis = (endMillis - nowMillis).coerceAtLeast(0L)
-
-                        TaskProgressInfo(
-                            taskId = task.id,
-                            progress = progress,
-                            remainingMillis = remainingMillis
-                        )
+                        task.id to taskProgressInfo
                     }
 
-                    progressMap[task.id] = taskProgressInfo
+                    _uiState.update { it.copy(tasksProgress = progressMap) }
+                    delay(1000L)
                 }
-
-                _uiState.update { it.copy(tasksProgress = progressMap) }
-                delay(1000L)
             }
         }
     }
 
-    private fun updateGreeting() {
-        val greeting = greetingUseCase.getGreeting()
-        _uiState.value = _uiState.value.copy(greeting = greeting)
-    }
-
-    fun deleteTask(task: Task) {
+    internal fun deleteTask(task: Task) {
         viewModelScope.launch {
             taskRepository.deleteTask(task)
         }
     }
 
-    fun setSelectedDate(date: LocalDate) {
+    internal fun setSelectedDate(date: LocalDate) {
         sharedDateRepository.updateDate(date)
         _uiState.update { currentState ->
             currentState.copy(
@@ -167,16 +125,21 @@ class MainScreenViewModel @Inject constructor(
         updateTasksForDate(date)
     }
 
-    fun setCurrentMonth(month: YearMonth) {
+    internal fun setCurrentMonth(month: YearMonth) {
         _uiState.update { currentState ->
             currentState.copy(currentMonth = month)
         }
     }
 
-    fun setDatePickerVisibility(isVisible: Boolean) {
+    internal fun setDatePickerVisibility(isVisible: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(isDatePickerVisible = isVisible)
         }
+    }
+
+    private fun updateGreeting() {
+        val greeting = greetingUseCase.getGreeting()
+        _uiState.update { it.copy(greeting = greeting) }
     }
 
     private fun updateTasksForDate(date: LocalDate) {
@@ -185,7 +148,6 @@ class MainScreenViewModel @Inject constructor(
         viewModelScope.launch {
             taskRepository.getTasksForDate(user.uid, date).collect { tasks ->
                 _uiState.update { it.copy(tasks = tasks) }
-
             }
         }
     }

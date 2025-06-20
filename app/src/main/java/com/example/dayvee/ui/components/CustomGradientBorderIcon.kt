@@ -31,7 +31,6 @@ fun CustomGradientBorderIcon(
     icon: ImageVector,
     iconTint: Color = Color.White,
     contentDescription: String? = null,
-    scale: Float = 1f,
     rotation: Float = 0f,
     onClick: () -> Unit = {},
 ) {
@@ -39,8 +38,6 @@ fun CustomGradientBorderIcon(
         modifier = modifier
             .size(size)
             .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
                 rotationZ = rotation
             }
             .clip(CircleShape)

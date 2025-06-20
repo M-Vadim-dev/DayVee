@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -112,7 +110,6 @@ fun MainScreen(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStackEntry?.destination?.route
 
-
     var showAddTask by remember { mutableStateOf(false) }
 
     var isAnimated by remember { mutableStateOf(false) }
@@ -143,12 +140,8 @@ fun MainScreen(
         }
     }
 
-    val scale by animateFloatAsState(
-        targetValue = if (isAnimated) 1.1f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-    )
     val rotation by animateFloatAsState(
-        targetValue = if (isAnimated) 45f else 0f, animationSpec = tween(300)
+        targetValue = if (isAnimated) 45f else 0f, animationSpec = tween()
     )
 
     Scaffold(containerColor = MaterialTheme.colorScheme.background, snackbarHost = {
@@ -197,7 +190,7 @@ fun MainScreen(
             gradientBorder = verticalDarkPurpleGradient,
             icon = Icons.Rounded.Add,
             contentDescription = null,
-            iconSize = 32.dp,
+            iconSize = 36.dp,
             modifier = Modifier
                 .offset(y = 44.dp)
                 .onGloballyPositioned { coordinates ->
@@ -205,7 +198,6 @@ fun MainScreen(
                     val size = coordinates.size
                     fabCenterX.floatValue = position.x + size.width / 2f
                 },
-            scale = scale,
             rotation = rotation,
             onClick = {
                 isAnimated = !isAnimated
