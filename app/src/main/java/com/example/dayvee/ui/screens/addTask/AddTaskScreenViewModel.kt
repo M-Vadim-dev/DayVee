@@ -80,7 +80,6 @@ class AddTaskScreenViewModel @Inject constructor(
             val endHour = state.endHour
             val endMinute = state.endMinute
 
-
             val selectedDate = state.selectedDate
             val startTime = convertToMillis(selectedDate, startHour, startMinute)
             val endTime = convertToMillis(selectedDate, endHour, endMinute)

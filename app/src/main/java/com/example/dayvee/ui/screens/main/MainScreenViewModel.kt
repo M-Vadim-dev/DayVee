@@ -60,7 +60,7 @@ class MainScreenViewModel @Inject constructor(
         viewModelScope.launch {
             val defaultUser = User(
                 status = 1,
-                username = "default",
+                username = "default_user",
                 password = "",
                 email = "",
                 question = "",
@@ -104,9 +104,17 @@ class MainScreenViewModel @Inject constructor(
             while (true) {
                 val nowMillis = System.currentTimeMillis()
 
-                val progressMap = tasks.associate { task ->
-                    val progressInfo = if (task.isDone || nowMillis >= task.endTime) {
-                        // Задача завершена — прогресс 100%
+                val progressMap = mutableMapOf<Int, TaskProgressInfo>()
+
+                tasks.forEach { task ->
+                    val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
+                        // Если задача ещё не отмечена как выполненная, но по времени уже завершилась
+                        if (!task.isDone) {
+                            viewModelScope.launch {
+                                taskRepository.updateTask(task.copy(isDone = true))
+                            }
+                        }
+
                         TaskProgressInfo(
                             taskId = task.id,
                             progress = 1f,
@@ -115,11 +123,10 @@ class MainScreenViewModel @Inject constructor(
                     } else {
                         val startMillis = task.startTime
                         val endMillis = task.endTime
-
                         val totalDuration = (endMillis - startMillis).coerceAtLeast(1L)
                         val elapsed = (nowMillis - startMillis).coerceIn(0L, totalDuration)
 
-                        val progress = elapsed.toFloat() / totalDuration.toFloat()
+                        val progress = elapsed.toFloat() / totalDuration
                         val remainingMillis = (endMillis - nowMillis).coerceAtLeast(0L)
 
                         TaskProgressInfo(
@@ -129,7 +136,7 @@ class MainScreenViewModel @Inject constructor(
                         )
                     }
 
-                    task.id to progressInfo
+                    progressMap[task.id] = taskProgressInfo
                 }
 
                 _uiState.update { it.copy(tasksProgress = progressMap) }
