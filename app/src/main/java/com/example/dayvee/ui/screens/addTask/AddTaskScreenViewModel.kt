@@ -3,12 +3,13 @@ package com.example.dayvee.ui.screens.addTask
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dayvee.data.SharedDateRepository
-import com.example.dayvee.data.TaskRepository
-import com.example.dayvee.data.UserRepository
+import com.example.dayvee.managers.TaskStartAlarmManager
+import com.example.dayvee.data.repository.SharedDateRepository
 import com.example.dayvee.domain.TaskValidationError
 import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
+import com.example.dayvee.domain.repository.TaskRepository
+import com.example.dayvee.domain.repository.UserRepository
 import com.example.dayvee.utils.TimeUtils.convertToMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,8 +17,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Inject
 
 @Immutable
@@ -47,6 +51,7 @@ class AddTaskScreenViewModel @Inject constructor(
     private val sharedDateRepository: SharedDateRepository,
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
+    private val taskStartAlarmManager: TaskStartAlarmManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddTaskScreenUiState())
@@ -113,8 +118,14 @@ class AddTaskScreenViewModel @Inject constructor(
                 isDone = isDone
             )
 
-            taskRepository.addTask(newTask)
+            val taskId = taskRepository.addTask(newTask)
             _taskCreated.value = true
+
+            taskStartAlarmManager.scheduleTaskStartAlarm(
+                taskId = taskId,
+                taskTitle = newTask.title,
+                startTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startMillis), ZoneId.systemDefault())
+            )
 
             _uiState.update {
                 it.copy(
@@ -139,11 +150,13 @@ class AddTaskScreenViewModel @Inject constructor(
 
     internal fun onTitleChange(title: String) {
         _uiState.update { it.copy(title = title) }
+        clearValidationError()
         validate(_uiState.value.copy(title = title))
     }
 
     internal fun onDescriptionChange(description: String) {
         _uiState.update { it.copy(description = description) }
+        clearValidationError()
         validate(_uiState.value.copy(description = description))
     }
 

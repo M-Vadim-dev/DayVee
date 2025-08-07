@@ -2,11 +2,11 @@ package com.example.dayvee.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dayvee.data.SharedDateRepository
-import com.example.dayvee.data.TaskRepository
-import com.example.dayvee.data.UserRepository
+import com.example.dayvee.data.repository.SharedDateRepository
 import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
+import com.example.dayvee.domain.repository.TaskRepository
+import com.example.dayvee.domain.repository.UserRepository
 import com.example.dayvee.domain.usecase.GreetingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

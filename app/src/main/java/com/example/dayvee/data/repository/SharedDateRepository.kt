@@ -1,4 +1,4 @@
-package com.example.dayvee.data
+package com.example.dayvee.data.repository
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

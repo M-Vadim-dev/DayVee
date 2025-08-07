@@ -23,4 +23,11 @@
     <string name="error_start_time_in_past">Нельзя создать задачу в прошлом времени.</string>
     <string name="error_end_time_before_start">Время окончания не может быть раньше начала.</string>
     <string name="error_invalid_start_time_format">Неверный формат времени начала.</string>
+
+    <plurals name="tasks_for_today">
+        <item quantity="one">У вас на сегодня %d задача</item>
+        <item quantity="few">У вас на сегодня %d задачи</item>
+        <item quantity="many">У вас на сегодня %d задач</item>
+        <item quantity="other">У вас на сегодня %d задачи</item>
+    </plurals>
 </resources>

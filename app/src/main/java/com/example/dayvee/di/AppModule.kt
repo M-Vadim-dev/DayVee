@@ -1,6 +1,7 @@
 package com.example.dayvee.di
 
 import android.content.Context
+import androidx.work.WorkManager
 import com.example.dayvee.data.local.dao.TaskDao
 import com.example.dayvee.data.local.dao.UserDao
 import com.example.dayvee.data.local.db.AppDataBase
@@ -37,6 +38,11 @@ class AppModule {
 
     @Provides
     fun provideUserDao(appDatabase: AppDataBase): UserDao = appDatabase.userDao()
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
+        WorkManager.getInstance(context)
 
 //    @Provides
 //    @Singleton

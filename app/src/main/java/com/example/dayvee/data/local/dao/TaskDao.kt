@@ -15,11 +15,14 @@ interface TaskDao {
     @Query("SELECT * FROM task WHERE date = :date AND user_id = :userId ORDER BY start_time ASC")
     fun getTasksForDate(userId: Int, date: LocalDate): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM task WHERE date = :date AND user_id = :userId ORDER BY start_time ASC")
+    suspend fun getTasksForDateOnce(userId: Int, date: LocalDate): List<TaskEntity>
+
     @Query("SELECT * FROM task WHERE date BETWEEN :start AND :end ORDER BY date ASC, start_time ASC")
     fun getTasksForDateRange(start: LocalDate, end: LocalDate): Flow<List<TaskEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(task: TaskEntity)
+    suspend fun insert(task: TaskEntity): Long
 
     @Update
     suspend fun update(task: TaskEntity)

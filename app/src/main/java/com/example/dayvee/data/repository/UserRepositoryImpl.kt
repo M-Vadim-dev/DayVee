@@ -1,24 +1,25 @@
-package com.example.dayvee.data
+package com.example.dayvee.data.repository
 
 import com.example.dayvee.data.local.dao.UserDao
 import com.example.dayvee.data.mapper.toDomain
 import com.example.dayvee.data.mapper.toEntity
 import com.example.dayvee.di.AppModule.IoDispatcher
 import com.example.dayvee.domain.model.User
+import com.example.dayvee.domain.repository.UserRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class UserRepository @Inject constructor(
+class UserRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-) {
+    @param:IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+) : UserRepository {
 
-    suspend fun getActiveUser(): User? = withContext(ioDispatcher) {
+    override suspend fun getActiveUser(): User? = withContext(ioDispatcher) {
         userDao.getActiveUser()?.toDomain()
     }
 
-    suspend fun initUserIfNotExists(defaultUser: User): User =
+    override suspend fun initUserIfNotExists(defaultUser: User): User =
         withContext(ioDispatcher) {
             val activeUserEntity = userDao.getActiveUser()
             if (activeUserEntity != null) {

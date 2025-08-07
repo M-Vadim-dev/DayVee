@@ -42,8 +42,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
     implementation(libs.hilt.android)
     implementation(libs.androidx.room.runtime)
     ksp(libs.hilt.compiler)
