@@ -3,18 +3,21 @@ package com.example.dayvee.ui.screens.addTask
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.dayvee.managers.TaskStartAlarmManager
+import com.example.dayvee.data.repository.SelectedTaskRepository
 import com.example.dayvee.data.repository.SharedDateRepository
 import com.example.dayvee.domain.TaskValidationError
 import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
 import com.example.dayvee.domain.repository.TaskRepository
 import com.example.dayvee.domain.repository.UserRepository
+import com.example.dayvee.managers.TaskStartAlarmManager
+import com.example.dayvee.utils.TimeUtils
 import com.example.dayvee.utils.TimeUtils.convertToMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -44,11 +47,14 @@ data class AddTaskScreenUiState(
     val isEndMinuteValid: Boolean = true,
 
     val isAddEnabled: Boolean = false,
+    val isEditMode: Boolean = false,
+    val editedTaskId: Int? = null,
 )
 
 @HiltViewModel
 class AddTaskScreenViewModel @Inject constructor(
     private val sharedDateRepository: SharedDateRepository,
+    private val selectedTaskRepository: SelectedTaskRepository,
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
     private val taskStartAlarmManager: TaskStartAlarmManager,
@@ -71,6 +77,11 @@ class AddTaskScreenViewModel @Inject constructor(
                     _uiState.update { it.copy(selectedDate = date) }
                 }
         }
+        viewModelScope.launch {
+            selectedTaskRepository.selectedTaskId.collectLatest { taskId ->
+                taskId?.let { loadTaskById(it) }
+            }
+        }
     }
 
     internal fun createTask() {
@@ -85,6 +96,28 @@ class AddTaskScreenViewModel @Inject constructor(
             val startMinute = state.startMinute
             val endHour = state.endHour
             val endMinute = state.endMinute
+
+            val startHourInt = startHour.toIntOrNull()
+            val startMinuteInt = startMinute.toIntOrNull()
+            val endHourInt = endHour.toIntOrNull()
+            val endMinuteInt = endMinute.toIntOrNull()
+
+            if (startHourInt == null || startHourInt !in 0..23) {
+                _validationError.value = TaskValidationError.InvalidStartHour
+                return@launch
+            }
+            if (startMinuteInt == null || startMinuteInt !in 0..59) {
+                _validationError.value = TaskValidationError.InvalidStartMinute
+                return@launch
+            }
+            if (endHourInt == null || endHourInt !in 0..23) {
+                _validationError.value = TaskValidationError.InvalidEndHour
+                return@launch
+            }
+            if (endMinuteInt == null || endMinuteInt !in 0..59) {
+                _validationError.value = TaskValidationError.InvalidEndMinute
+                return@launch
+            }
 
             val selectedDate = state.selectedDate
             val startMillis = convertToMillis(selectedDate, startHour, startMinute)
@@ -108,7 +141,8 @@ class AddTaskScreenViewModel @Inject constructor(
                 return@launch
             }
 
-            val newTask = Task(
+            val taskToSave = Task(
+                id = state.editedTaskId ?: 0,
                 userId = user.uid,
                 title = title,
                 description = description,
@@ -118,14 +152,18 @@ class AddTaskScreenViewModel @Inject constructor(
                 isDone = isDone
             )
 
-            val taskId = taskRepository.addTask(newTask)
-            _taskCreated.value = true
-
-            taskStartAlarmManager.scheduleTaskStartAlarm(
-                taskId = taskId,
-                taskTitle = newTask.title,
-                startTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startMillis), ZoneId.systemDefault())
-            )
+            if (state.isEditMode && state.editedTaskId != null) {
+                taskRepository.updateTask(taskToSave)
+                _taskCreated.value = true
+            } else {
+                val taskId = taskRepository.addTask(taskToSave)
+                _taskCreated.value = true
+                taskStartAlarmManager.setTaskStartAlarm(
+                    taskId = taskId,
+                    taskTitle = taskToSave.title,
+                    startTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startMillis), ZoneId.systemDefault())
+                )
+            }
 
             _uiState.update {
                 it.copy(
@@ -134,9 +172,38 @@ class AddTaskScreenViewModel @Inject constructor(
                     startHour = "",
                     startMinute = "",
                     endHour = "",
-                    endMinute = ""
+                    endMinute = "",
+                    isAddEnabled = false,
+                    isEditMode = false,
+                    editedTaskId = null,
                 )
             }
+        }
+    }
+
+    internal fun loadTaskById(taskId: Int) {
+        viewModelScope.launch {
+            taskRepository.getTaskById(taskId)?.let { task ->
+                loadTaskForEdit(task)
+                sharedDateRepository.updateDate(task.date)
+            }
+        }
+    }
+
+    internal fun resetUiState() {
+        val currentState = _uiState.value
+        if (currentState.editedTaskId != null) {
+            _uiState.update {
+                AddTaskScreenUiState(
+                    activeUser = currentState.activeUser,
+                    today = currentState.today,
+                    selectedDate = currentState.selectedDate,
+                    currentMonth = currentState.currentMonth,
+                )
+            }
+            _validationError.value = null
+            _taskCreated.value = false
+            selectedTaskRepository.clearSelectedTaskId()
         }
     }
 
@@ -193,6 +260,25 @@ class AddTaskScreenViewModel @Inject constructor(
             val isValid = minuteInt != null && minuteInt in 0..59
             _uiState.update { it.copy(endMinute = newValue, isEndMinuteValid = isValid) }
             validate(_uiState.value)
+        }
+    }
+
+    private fun loadTaskForEdit(task: Task) {
+        val startTime = TimeUtils.millisToZonedDateTime(task.startTime)
+        val endTime = TimeUtils.millisToZonedDateTime(task.endTime)
+
+        _uiState.update {
+            it.copy(
+                title = task.title,
+                description = task.description,
+                startHour = startTime.hour.toString().padStart(2, '0'),
+                startMinute = startTime.minute.toString().padStart(2, '0'),
+                endHour = endTime.hour.toString().padStart(2, '0'),
+                endMinute = endTime.minute.toString().padStart(2, '0'),
+                selectedDate = task.date,
+                isEditMode = true,
+                editedTaskId = task.id
+            )
         }
     }
 

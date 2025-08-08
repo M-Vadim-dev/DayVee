@@ -24,6 +24,10 @@ class TaskRepositoryImpl @Inject constructor(
         return taskDao.getTasksForDateOnce(userId, date).map { it.toDomain() }
     }
 
+    override suspend fun getTaskById(taskId: Int): Task? = withContext(ioDispatcher) {
+        taskDao.getTaskById(taskId)?.toDomain()
+    }
+
     override suspend fun addTask(task: Task): Long = withContext(ioDispatcher) {
         taskDao.insert(task.toEntity())
     }

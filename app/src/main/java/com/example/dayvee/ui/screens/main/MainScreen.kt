@@ -84,6 +84,7 @@ import com.example.dayvee.ui.components.CustomGradientBorderIcon
 import com.example.dayvee.ui.components.bottomBar.CustomBottomBar
 import com.example.dayvee.ui.components.bottomBar.bottomBarItems
 import com.example.dayvee.ui.screens.addTask.AddTaskScreen
+import com.example.dayvee.ui.screens.addTask.AddTaskScreenViewModel
 import com.example.dayvee.ui.theme.Gradients.verticalBlackOverlayGradient
 import com.example.dayvee.ui.theme.Gradients.verticalDarkPurpleGradient
 import com.example.dayvee.ui.theme.Gradients.verticalMidnightBlueGradient
@@ -100,6 +101,7 @@ import kotlin.math.roundToInt
 fun MainScreen(
     navController: NavHostController,
     mainScreenViewModel: MainScreenViewModel = hiltViewModel(),
+    addTaskScreenViewModel: AddTaskScreenViewModel = hiltViewModel(),
 ) {
     val uiState by mainScreenViewModel.uiState.collectAsState()
 
@@ -202,6 +204,7 @@ fun MainScreen(
             onClick = {
                 isAnimated = !isAnimated
                 showAddTask = isAnimated
+                addTaskScreenViewModel.resetUiState()
                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         )
@@ -245,6 +248,11 @@ fun MainScreen(
                     MainScreenContent(
                         tasks = uiState.tasks,
                         tasksProgress = uiState.tasksProgress,
+                        onEditTaskClick = { task ->
+                            mainScreenViewModel.onTaskSelected(task.id)
+                            isAnimated = true
+                            showAddTask = true
+                        },
                         onDeleteTaskClick = mainScreenViewModel::deleteTask
                     )
                 }
@@ -382,7 +390,7 @@ private fun MainScreenContent(
                     itemsIndexed(tasks) { index, task ->
                         val progressInfo = tasksProgress[task.id]
                         val progress = progressInfo?.progress ?: 0f
-                        Log.d("TaskProgress", "Task id=${task.id}, progress=$progress")
+                        Log.w("!!!", "Task id=${task.id}, progress=$progress")
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

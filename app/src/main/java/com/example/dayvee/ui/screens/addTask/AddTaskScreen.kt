@@ -56,6 +56,10 @@ fun AddTaskScreen(
             TaskValidationError.EndTimeBeforeStart -> stringResource(R.string.error_end_time_before_start)
             TaskValidationError.InvalidStartTimeFormat -> stringResource(R.string.error_invalid_start_time_format)
             TaskValidationError.InvalidEndTimeFormat -> stringResource(R.string.error_invalid_end_time_format)
+            TaskValidationError.InvalidStartHour -> stringResource(R.string.error_invalid_start_hour)
+            TaskValidationError.InvalidStartMinute -> stringResource(R.string.error_invalid_start_minute)
+            TaskValidationError.InvalidEndHour -> stringResource(R.string.error_invalid_end_hour)
+            TaskValidationError.InvalidEndMinute -> stringResource(R.string.error_invalid_end_minute)
         }
     }
 
@@ -267,7 +271,8 @@ fun AddTaskScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            text = stringResource(id = R.string.add_task),
+            text = if (uiState.isEditMode) stringResource(id = R.string.edit_task)
+            else stringResource(id = R.string.add_task),
         )
     }
 }

@@ -12,6 +12,7 @@
     <string name="edit">Edit</string>
     <string name="add_task">Add Task</string>
     <string name="no_tasks">No tasks</string>
+    <string name="edit_task" translatable="false">Edit Task</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_calendar">Calendar</string>
@@ -22,6 +23,11 @@
     <string name="error_end_time_before_start">End time cannot be before start time.</string>
     <string name="error_invalid_start_time_format">Invalid start time format.</string>
     <string name="error_invalid_end_time_format">Invalid end time format.</string>
+
+    <string name="error_invalid_start_hour">Start hour must be a number between 0 and 23</string>
+    <string name="error_invalid_start_minute">Start minute must be a number between 0 and 59</string>
+    <string name="error_invalid_end_hour">End hour must be a number between 0 and 23</string>
+    <string name="error_invalid_end_minute">End minute must be a number between 0 and 59</string>
 
     <string name="greeting_morning">Good Morning</string>
     <string name="greeting_afternoon">Good Afternoon</string>

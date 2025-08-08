@@ -1,7 +1,9 @@
 package com.example.dayvee.utils
 
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 private const val INVALID_HOUR_MESSAGE = "Hour must be a number between 0 and 23"
 private const val INVALID_MINUTE_MESSAGE = "Minute must be a number between 0 and 59"
@@ -23,4 +25,10 @@ object TimeUtils {
         val dateTime = date.atTime(hour, minute)
         return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
+
+    /**
+     * Конвертирует миллисекунды в ZonedDateTime в системной временной зоне.
+     */
+    fun millisToZonedDateTime(millis: Long): ZonedDateTime =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault())
 }

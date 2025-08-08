@@ -2,6 +2,7 @@ package com.example.dayvee.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.dayvee.data.repository.SelectedTaskRepository
 import com.example.dayvee.data.repository.SharedDateRepository
 import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.User
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val sharedDateRepository: SharedDateRepository,
+    private val selectedTaskRepository: SelectedTaskRepository,
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
     private val greetingUseCase: GreetingUseCase,
@@ -126,6 +128,10 @@ class MainScreenViewModel @Inject constructor(
         }
         sharedDateRepository.updateDate(date)
         updateTasksForDate(date)
+    }
+
+    internal fun onTaskSelected(taskId: Int) {
+        selectedTaskRepository.selectTask(taskId)
     }
 
     internal fun setCurrentMonth(month: YearMonth) {

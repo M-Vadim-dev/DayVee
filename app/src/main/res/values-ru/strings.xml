@@ -15,6 +15,7 @@
     <string name="nav_stats">Статистика</string>
     <string name="nav_setting">Настройки</string>
     <string name="error_invalid_end_time_format">Неверный формат времени окончания.</string>
+    <string name="error_invalid_end_minute">Минута окончания должна быть числом от 0 до 59</string>
     <string name="greeting_morning">Доброе утро</string>
     <string name="greeting_afternoon">Добрый день</string>
     <string name="greeting_evening">Добрый вечер</string>
@@ -23,7 +24,9 @@
     <string name="error_start_time_in_past">Нельзя создать задачу в прошлом времени.</string>
     <string name="error_end_time_before_start">Время окончания не может быть раньше начала.</string>
     <string name="error_invalid_start_time_format">Неверный формат времени начала.</string>
-
+    <string name="error_invalid_start_hour">Час начала должен быть числом от 0 до 23</string>
+    <string name="error_invalid_start_minute">Минута начала должна быть числом от 0 до 59</string>
+    <string name="error_invalid_end_hour">Час окончания должен быть числом от 0 до 23</string>
     <plurals name="tasks_for_today">
         <item quantity="one">У вас на сегодня %d задача</item>
         <item quantity="few">У вас на сегодня %d задачи</item>

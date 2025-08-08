@@ -16,7 +16,7 @@ import javax.inject.Singleton
 class TaskStartAlarmManager @Inject constructor(
     @param:ApplicationContext private val applicationContext: Context,
 ) {
-    fun scheduleTaskStartAlarm(taskId: Long, taskTitle: String, startTime: ZonedDateTime) {
+    fun setTaskStartAlarm(taskId: Long, taskTitle: String, startTime: ZonedDateTime) {
         val alarmManager = applicationContext.getSystemService(AlarmManager::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

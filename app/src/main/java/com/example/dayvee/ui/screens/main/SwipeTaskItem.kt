@@ -181,7 +181,7 @@ fun SwipeTaskItem(
                         }
                     )
                 }
-                .clickable(enabled = offsetX.value == 0f, onClick = onClick) //todo
+                .clickable(enabled = offsetX.value == 0f, onClick = onClick)
         ) {
             TaskItem(
                 textTitle = textTitle,

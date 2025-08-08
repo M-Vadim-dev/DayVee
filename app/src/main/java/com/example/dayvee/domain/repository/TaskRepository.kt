@@ -9,6 +9,8 @@ interface TaskRepository {
 
     suspend fun getTasksForDateOnce(userId: Int, date: LocalDate): List<Task>
 
+    suspend fun getTaskById(taskId: Int): Task?
+
     suspend fun addTask(task: Task): Long
 
     suspend fun deleteTask(task: Task)

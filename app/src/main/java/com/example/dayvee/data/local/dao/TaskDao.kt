@@ -36,6 +36,9 @@ interface TaskDao {
     @Query("SELECT * FROM task ORDER BY date ASC, start_time ASC")
     fun getAllTasks(): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM task WHERE id = :taskId LIMIT 1")
+    suspend fun getTaskById(taskId: Int): TaskEntity?
+
     @Query("UPDATE task SET is_done = :isDone WHERE id = :id")
     suspend fun toggleDone(id: Int, isDone: Boolean)
 }
