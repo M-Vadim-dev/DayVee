@@ -8,6 +8,7 @@ import com.example.dayvee.domain.model.User
 import com.example.dayvee.domain.repository.TaskRepository
 import com.example.dayvee.domain.repository.UserRepository
 import com.example.dayvee.domain.usecase.GreetingUseCase
+import com.example.dayvee.managers.TaskStartAlarmManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +27,7 @@ class MainScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
     private val greetingUseCase: GreetingUseCase,
+    private val taskStartAlarmManager: TaskStartAlarmManager,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MainScreenUiState())
@@ -111,6 +113,7 @@ class MainScreenViewModel @Inject constructor(
     internal fun deleteTask(task: Task) {
         viewModelScope.launch {
             taskRepository.deleteTask(task)
+            taskStartAlarmManager.cancelTaskStartAlarm(task.id.hashCode().toLong(), task.title)
         }
     }
 

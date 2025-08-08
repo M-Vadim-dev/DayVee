@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import com.example.dayvee.receivers.TaskStartReceiver
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.ZonedDateTime
@@ -22,7 +21,6 @@ class TaskStartAlarmManager @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
-                Log.w("TaskStartAlarmManager", "Exact alarm permission not granted")
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
