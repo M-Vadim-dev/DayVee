@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 
 data class BottomBarItemRes(
     val route: String,
-    @StringRes val labelRes: Int,
-    @DrawableRes val iconOutlinedRes: Int,
-    @DrawableRes val iconFilledRes: Int,
+    @param:StringRes val labelRes: Int,
+    @param:DrawableRes val iconOutlinedRes: Int,
+    @param:DrawableRes val iconFilledRes: Int,
 )

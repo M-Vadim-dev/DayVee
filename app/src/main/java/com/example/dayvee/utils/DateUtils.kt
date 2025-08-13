@@ -1,9 +1,10 @@
 package com.example.dayvee.utils
 
-import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.time.format.FormatStyle
 import java.util.Locale
 
 object DateUtils {
@@ -12,16 +13,29 @@ object DateUtils {
         date.format(DateTimeFormatter.ofPattern("EEEE, d MMMM", locale))
             .replaceFirstChar { it.uppercaseChar() }
 
+    fun formatDate(date: LocalDate, locale: Locale = Locale.getDefault()): String =
+        date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", locale))
+            .replaceFirstChar { it.uppercaseChar() }
+
     fun formatShortDate(date: LocalDate, locale: Locale = Locale.getDefault()): String =
         date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", locale))
 
-    fun formatTime(timeMillis: Long, locale: Locale = Locale.getDefault()): String =
-        SimpleDateFormat("HH:mm", locale).format(Date(timeMillis))
+    fun formatTime(
+        timeMillis: Long,
+        locale: Locale = Locale.getDefault(),
+        useAmPm: Boolean? = null,
+    ): String {
+        val time = Instant.ofEpochMilli(timeMillis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalTime()
 
-    fun formatTimeWithAmPm(timeMillis: Long, locale: Locale = Locale.getDefault()): String =
-        SimpleDateFormat("hh:mm a", locale).format(Date(timeMillis))
+        val formatter = when (useAmPm) {
+            true -> DateTimeFormatter.ofPattern("hh:mm a", locale)
+            false -> DateTimeFormatter.ofPattern("HH:mm", locale)
+            null -> DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(locale)
+        }
 
-    fun formatTimeWithSeconds(timeMillis: Long, locale: Locale = Locale.getDefault()): String =
-        SimpleDateFormat("HH:mm:ss", locale).format(Date(timeMillis))
+        return time.format(formatter)
+    }
 
 }

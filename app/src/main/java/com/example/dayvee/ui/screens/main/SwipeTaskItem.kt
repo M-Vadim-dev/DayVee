@@ -1,5 +1,6 @@
 package com.example.dayvee.ui.screens.main
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -34,11 +36,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.example.dayvee.R
+import com.example.dayvee.ui.theme.DayVeeTheme
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -52,6 +56,7 @@ fun SwipeTaskItem(
     progress: Float,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
+    onProgressLongClick: () -> Unit = {},
     onDelete: () -> Unit = {},
     onEdit: () -> Unit = {}
 ) {
@@ -188,10 +193,26 @@ fun SwipeTaskItem(
                 textDescription = textDescription,
                 isCompleted = isComplete,
                 progress = progress,
-                onProgressClick = {},
+                onProgressClick = onProgressLongClick,
                 timeStart = timeStart,
                 timeEnd = timeEnd
             )
         }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun SwipeTaskItemActivePreview() {
+    DayVeeTheme {
+        SwipeTaskItem(
+            textTitle = "Prepare presentationPrepare presentationPrepare presentation",
+            textDescription = "Slides for Monday meeting.Slides for Monday meeting.Slides for Monday meeting.Slides for Monday meeting.",
+            timeStart = "14:00",
+            timeEnd = "15:30",
+            isComplete = false,
+            progress = 0.35f,
+            modifier = Modifier.height(90.dp)
+        )
     }
 }

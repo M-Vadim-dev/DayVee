@@ -1,6 +1,13 @@
 package com.example.dayvee.ui.screens.addTask
 
-import android.content.res.Configuration
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.os.Build
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,19 +32,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dayvee.R
 import com.example.dayvee.domain.TaskValidationError
+import com.example.dayvee.ui.components.CustomCircularDigitalTimePicker
 import com.example.dayvee.ui.components.CustomGradientButton
+import java.util.Locale
 
 @Composable
 fun AddTaskScreen(
@@ -93,7 +104,91 @@ fun AddTaskScreen(
 }
 
 @Composable
-fun AddTaskScreenContent(
+private fun VoiceInputTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelText: String,
+    leadingIcon: @Composable (() -> Unit)? = null
+) {
+    val context = LocalContext.current
+
+    val speechRecognizerIntent = remember(context) {
+        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE,
+                Locale.getDefault().toLanguageTag()
+            )
+            putExtra(
+                RecognizerIntent.EXTRA_PROMPT,
+                context.getString(R.string.voice_input_prompt)
+            )
+        }
+    }
+
+    val isSpeechAvailable = remember(context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.queryIntentActivities(
+                speechRecognizerIntent,
+                PackageManager.ResolveInfoFlags.of(0)
+            ).isNotEmpty()
+        } else {
+            @Suppress("DEPRECATION")
+            context.packageManager.queryIntentActivities(
+                speechRecognizerIntent,
+                0
+            ).isNotEmpty()
+        }
+    }
+
+    val speechLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val matches = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            if (!matches.isNullOrEmpty()) {
+                onValueChange(matches[0])
+            }
+        }
+    }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        shape = RoundedCornerShape(12.dp),
+        label = { Text(text = labelText) },
+        leadingIcon = leadingIcon,
+        trailingIcon = {
+            Row {
+                if (value.isNotEmpty()) {
+                    IconButton(onClick = { onValueChange("") }) {
+                        Icon(
+                            Icons.Filled.Clear,
+                            contentDescription = null
+                        )
+                    }
+                }
+                if (isSpeechAvailable) {
+                    IconButton(onClick = { speechLauncher.launch(speechRecognizerIntent) }) {
+                        Icon(
+                            painterResource(R.drawable.ic_mic),
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+        },
+        maxLines = 3,
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun AddTaskScreenContent(
     uiState: AddTaskScreenUiState,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -103,187 +198,252 @@ fun AddTaskScreenContent(
     onEndMinuteChange: (String) -> Unit,
     onAddTaskClick: () -> Unit,
 ) {
+    val startHourInt = uiState.startHour.toIntOrNull() ?: 0
+    val startMinuteInt = uiState.startMinute.toIntOrNull() ?: 0
+    val endHourInt = uiState.endHour.toIntOrNull() ?: 0
+    val endMinuteInt = uiState.endMinute.toIntOrNull() ?: 0
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(start = 16.dp, top = 4.dp, end = 16.dp, bottom = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(
-            value = uiState.title,
-            onValueChange = onTitleChange,
-            shape = RoundedCornerShape(12.dp),
-            label = { Text(text = "Title") },
-            leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
-            trailingIcon = {
-                if (uiState.title.isNotEmpty()) {
-                    IconButton(onClick = { onTitleChange("") }) {
-                        Icon(Icons.Filled.Clear, contentDescription = null)
-                    }
-                }
-            },
-            maxLines = 2,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_schedule),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
-                )
-                Text(
-                    text = "Start Time",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f),
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(105.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_pace),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
-                )
-                Text(
-                    text = "End Time",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f),
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
-
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            OutlinedTextField(
-                value = uiState.startHour,
-                onValueChange = onStartHourChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp),
-                label = { Text(text = "Hour", fontSize = 10.sp) },
-                singleLine = true,
-                isError = !uiState.isStartHourValid,
-                modifier = Modifier.weight(1f)
-            )
-            OutlinedTextField(
-                value = uiState.startMinute,
-                onValueChange = onStartMinuteChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp),
-                label = { Text(text = "Minute", fontSize = 10.sp) },
-                singleLine = true,
-                isError = !uiState.isStartMinuteValid,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.weight(0.5f))
-            OutlinedTextField(
-                value = uiState.endHour,
-                onValueChange = onEndHourChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp),
-                label = {
-                    if (uiState.isEndHourValid) {
-                        Text(text = "Hour", fontSize = 10.sp)
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
-                singleLine = true,
-                isError = !uiState.isEndHourValid,
-                modifier = Modifier.weight(1f)
-            )
-            OutlinedTextField(
-                value = uiState.endMinute,
-                onValueChange = onEndMinuteChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                shape = RoundedCornerShape(12.dp),
-                label = {
-                    if (uiState.isEndMinuteValid) {
-                        Text(text = "Minute", fontSize = 10.sp)
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
-                },
-                singleLine = true,
-                isError = !uiState.isEndMinuteValid,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
+        TitleSection(uiState.title, onTitleChange)
         Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = uiState.description,
-            onValueChange = onDescriptionChange,
-            shape = RoundedCornerShape(12.dp),
-            label = { Text(text = "Description") },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_info), contentDescription = null
-                )
-            },
-            trailingIcon = {
-                if (uiState.description.isNotEmpty()) {
-                    IconButton(onClick = { onDescriptionChange("") }) {
-                        Icon(Icons.Filled.Clear, contentDescription = null)
-                    }
-                }
-            },
-            maxLines = 3,
-            modifier = Modifier.fillMaxWidth()
+        ManualTimeInputs(
+            uiState,
+            onStartHourChange,
+            onStartMinuteChange,
+            onEndHourChange,
+            onEndMinuteChange
         )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
+        Spacer(modifier = Modifier.height(4.dp))
+        TimePickersSection(
+            startHour = startHourInt,
+            startMinute = startMinuteInt,
+            endHour = endHourInt,
+            endMinute = endMinuteInt,
+            onStartHourChange = onStartHourChange,
+            onStartMinuteChange = onStartMinuteChange,
+            onEndHourChange = onEndHourChange,
+            onEndMinuteChange = onEndMinuteChange
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        DescriptionSection(uiState.description, onDescriptionChange)
+        Spacer(modifier = Modifier.height(8.dp))
         RepeatSection()
-
         Spacer(modifier = Modifier.height(24.dp))
+        AddButtonSection(uiState.isAddEnabled, uiState.isEditMode, onAddTaskClick)
+    }
+}
 
-        CustomGradientButton(
-            onClick = onAddTaskClick,
-            enabled = uiState.isAddEnabled,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            text = if (uiState.isEditMode) stringResource(id = R.string.edit_task)
-            else stringResource(id = R.string.add_task),
+@Composable
+private fun TitleSection(title: String, onTitleChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = title,
+        onValueChange = onTitleChange,
+        shape = RoundedCornerShape(12.dp),
+        label = { Text(text = stringResource(id = R.string.text_title_task)) },
+        leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+        trailingIcon = {
+            if (title.isNotEmpty()) {
+                IconButton(onClick = { onTitleChange("") }) {
+                    Icon(Icons.Filled.Clear, contentDescription = null)
+                }
+            }
+        },
+        maxLines = 2,
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+private fun TimePickersSection(
+    startHour: Int,
+    startMinute: Int,
+    endHour: Int,
+    endMinute: Int,
+    onStartHourChange: (String) -> Unit,
+    onStartMinuteChange: (String) -> Unit,
+    onEndHourChange: (String) -> Unit,
+    onEndMinuteChange: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TimePickerColumn(
+            iconRes = R.drawable.ic_schedule,
+            labelRes = R.string.text_start_time_task,
+            hour = startHour,
+            minute = startMinute,
+            onHourChange = onStartHourChange,
+            onMinuteChange = onStartMinuteChange
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        TimePickerColumn(
+            iconRes = R.drawable.ic_pace,
+            labelRes = R.string.text_end_time_task,
+            hour = endHour,
+            minute = endMinute,
+            onHourChange = onEndHourChange,
+            onMinuteChange = onEndMinuteChange
         )
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun AddTaskScreenContentPreview() {
-    AddTaskScreenContent(
+private fun TimePickerColumn(
+    iconRes: Int,
+    labelRes: Int,
+    hour: Int,
+    minute: Int,
+    onHourChange: (String) -> Unit,
+    onMinuteChange: (String) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f)
+            )
+            Text(
+                text = stringResource(labelRes),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+        CustomCircularDigitalTimePicker(
+            hour = hour,
+            minute = minute,
+            onHourChange = { onHourChange(it.toString().padStart(2, '0')) },
+            onMinuteChange = { onMinuteChange(it.toString().padStart(2, '0')) },
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun ManualTimeInputs(
+    uiState: AddTaskScreenUiState,
+    onStartHourChange: (String) -> Unit,
+    onStartMinuteChange: (String) -> Unit,
+    onEndHourChange: (String) -> Unit,
+    onEndMinuteChange: (String) -> Unit
+) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = uiState.startHour,
+            onValueChange = onStartHourChange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            shape = RoundedCornerShape(12.dp),
+            label = { Text(text = stringResource(id = R.string.text_hour), fontSize = 10.sp) },
+            singleLine = true,
+            isError = !uiState.isStartHourValid,
+            modifier = Modifier.weight(1f)
+        )
+        Text(text = ":", fontSize = 28.sp, modifier = Modifier.align(Alignment.CenterVertically))
+        OutlinedTextField(
+            value = uiState.startMinute,
+            onValueChange = onStartMinuteChange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            shape = RoundedCornerShape(12.dp),
+            label = { Text(text = stringResource(id = R.string.text_minute), fontSize = 10.sp) },
+            singleLine = true,
+            isError = !uiState.isStartMinuteValid,
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.weight(0.4f))
+        OutlinedTextField(
+            value = uiState.endHour,
+            onValueChange = onEndHourChange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            shape = RoundedCornerShape(12.dp),
+            label = {
+                if (uiState.isEndHourValid) Text(
+                    text = stringResource(id = R.string.text_hour),
+                    fontSize = 10.sp
+                )
+                else Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            singleLine = true,
+            isError = !uiState.isEndHourValid,
+            modifier = Modifier.weight(1f)
+        )
+        Text(text = ":", fontSize = 28.sp, modifier = Modifier.align(Alignment.CenterVertically))
+        OutlinedTextField(
+            value = uiState.endMinute,
+            onValueChange = onEndMinuteChange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            shape = RoundedCornerShape(12.dp),
+            label = {
+                if (uiState.isEndMinuteValid) Text(
+                    text = stringResource(id = R.string.text_minute),
+                    fontSize = 10.sp
+                )
+                else Icon(
+                    Icons.Default.Warning,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
+                )
+            },
+            singleLine = true,
+            isError = !uiState.isEndMinuteValid,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun DescriptionSection(description: String, onDescriptionChange: (String) -> Unit) {
+    VoiceInputTextField(
+        value = description,
+        onValueChange = onDescriptionChange,
+        labelText = stringResource(R.string.text_description_task),
+        leadingIcon = { Icon(painterResource(R.drawable.ic_info), contentDescription = null) }
+    )
+}
+
+@Composable
+private fun AddButtonSection(
+    isAddEnabled: Boolean,
+    isEditMode: Boolean,
+    onAddTaskClick: () -> Unit
+) {
+    CustomGradientButton(
+        onClick = onAddTaskClick,
+        enabled = isAddEnabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp),
+        text = if (isEditMode) stringResource(R.string.edit_task) else stringResource(R.string.add_task)
+    )
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun TitleSectionPreview() {
+    TitleSection(title = "Workout") {}
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun ManualTimeInputsPreview() {
+    ManualTimeInputs(
         uiState = AddTaskScreenUiState(
-            title = "Workout",
-            description = "Morning running and stretch",
+            title = "",
+            description = "",
             startHour = "07",
             startMinute = "30",
             endHour = "08",
@@ -294,11 +454,30 @@ fun AddTaskScreenContentPreview() {
             isEndMinuteValid = true,
             isAddEnabled = true
         ),
-        onTitleChange = {},
-        onDescriptionChange = {},
         onStartHourChange = {},
         onStartMinuteChange = {},
         onEndHourChange = {},
-        onEndMinuteChange = {},
-        onAddTaskClick = {})
+        onEndMinuteChange = {}
+    )
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun TimePickersSectionPreview() {
+    TimePickersSection(
+        startHour = 7,
+        startMinute = 30,
+        endHour = 8,
+        endMinute = 15,
+        onStartHourChange = {},
+        onStartMinuteChange = {},
+        onEndHourChange = {},
+        onEndMinuteChange = {}
+    )
+}
+
+@Preview(uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun AddButtonSectionPreview() {
+    AddButtonSection(isAddEnabled = true, isEditMode = false) {}
 }

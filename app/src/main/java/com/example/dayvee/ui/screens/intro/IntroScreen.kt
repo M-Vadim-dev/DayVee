@@ -113,7 +113,7 @@ fun IntroScreen(navController: NavHostController) {
 
 @Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun IntroScreenPreview() {
+private fun IntroScreenPreview() {
     val fakeNavController = rememberNavControllerFake()
 
     DayVeeTheme(darkTheme = true) {
@@ -122,6 +122,6 @@ fun IntroScreenPreview() {
 }
 
 @Composable
-fun rememberNavControllerFake(): NavHostController {
+private fun rememberNavControllerFake(): NavHostController {
     return rememberNavController()
 }

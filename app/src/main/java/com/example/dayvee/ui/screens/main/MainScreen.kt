@@ -79,6 +79,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.dayvee.R
 import com.example.dayvee.domain.model.Task
+import com.example.dayvee.navigation.Screen
 import com.example.dayvee.ui.components.CustomDatePicker
 import com.example.dayvee.ui.components.CustomGradientBorderIcon
 import com.example.dayvee.ui.components.bottomBar.CustomBottomBar
@@ -91,7 +92,6 @@ import com.example.dayvee.ui.theme.Gradients.verticalMidnightBlueGradient
 import com.example.dayvee.ui.theme.Gradients.verticalPurpleGradient
 import com.example.dayvee.ui.theme.Montserrat
 import com.example.dayvee.utils.DateUtils.formatTime
-import com.example.dayvee.utils.DateUtils.formatTimeWithAmPm
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -248,6 +248,12 @@ fun MainScreen(
                     MainScreenContent(
                         tasks = uiState.tasks,
                         tasksProgress = uiState.tasksProgress,
+                        onClickTask = { task ->
+                            navController.navigate(Screen.Task.createRoute(task.id))
+                        },
+                        onMarkTaskDone = { task ->
+                            mainScreenViewModel.markTaskDone(task.id)
+                        },
                         onEditTaskClick = { task ->
                             mainScreenViewModel.onTaskSelected(task.id)
                             isAnimated = true
@@ -347,6 +353,8 @@ private fun MainTopBarTitle(
 private fun MainScreenContent(
     tasks: List<Task>,
     tasksProgress: Map<Int, TaskProgressInfo>,
+    onClickTask: (Task) -> Unit = {},
+    onMarkTaskDone: (Task) -> Unit = {},
     onEditTaskClick: (Task) -> Unit = {},
     onDeleteTaskClick: (Task) -> Unit = {},
 ) {
@@ -436,7 +444,7 @@ private fun MainScreenContent(
                                     )
                                 } else {
                                     Text(
-                                        text = formatTimeWithAmPm(task.startTime),
+                                        text = formatTime(task.startTime),
                                         color = MaterialTheme.colorScheme.onSecondary,
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.SemiBold, fontSize = 14.sp
@@ -445,7 +453,7 @@ private fun MainScreenContent(
                                         maxLines = 2,
                                     )
 //                                    Text(
-//                                        text = formatTimeWithAmPm(task.endTime),
+//                                        text = formatTime(task.endTime),
 //                                        color = MaterialTheme.colorScheme.onSecondary,
 //                                        style = MaterialTheme.typography.labelSmall.copy(
 //                                            fontWeight = FontWeight.SemiBold, fontSize = 14.sp
@@ -482,6 +490,8 @@ private fun MainScreenContent(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(6.dp),
+                                onClick = { onClickTask(task) },
+                                onProgressLongClick = { onMarkTaskDone(task) },
                                 onEdit = { onEditTaskClick(task) },
                                 onDelete = { onDeleteTaskClick(task) },
                                 timeStart = formatTime(task.startTime),

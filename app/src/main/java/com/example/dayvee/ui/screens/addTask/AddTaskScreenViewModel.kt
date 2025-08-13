@@ -161,7 +161,10 @@ class AddTaskScreenViewModel @Inject constructor(
                 taskStartAlarmManager.setTaskStartAlarm(
                     taskId = taskId,
                     taskTitle = taskToSave.title,
-                    startTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(startMillis), ZoneId.systemDefault())
+                    startTime = ZonedDateTime.ofInstant(
+                        Instant.ofEpochMilli(startMillis),
+                        ZoneId.systemDefault()
+                    )
                 )
             }
 

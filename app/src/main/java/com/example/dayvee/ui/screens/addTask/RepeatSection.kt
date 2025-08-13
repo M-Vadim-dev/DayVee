@@ -1,5 +1,6 @@
 package com.example.dayvee.ui.screens.addTask
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,8 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dayvee.R
+import com.example.dayvee.ui.theme.DayVeeTheme
 import java.time.DayOfWeek
 import java.util.Locale
 
@@ -51,7 +56,7 @@ fun RepeatSection() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -60,7 +65,7 @@ fun RepeatSection() {
                 tint = contentColor
             )
             Text(
-                text = "Repeat",
+                text = stringResource(R.string.text_repeat),
                 style = MaterialTheme.typography.bodyLarge,
                 color = contentColor,
                 modifier = Modifier
@@ -93,7 +98,7 @@ fun RepeatSection() {
 }
 
 @Composable
-fun RepeatDaysSelector(
+private fun RepeatDaysSelector(
     selectedDays: List<DayOfWeek>,
     onDayToggle: (DayOfWeek) -> Unit,
     locale: Locale = Locale.getDefault(),
@@ -132,20 +137,22 @@ fun RepeatDaysSelector(
 }
 
 @Composable
-fun RepeatOptionsSection(
+private fun RepeatOptionsSection(
     selectedDays: List<DayOfWeek>,
     onDayToggle: (DayOfWeek) -> Unit,
     selectedRepeatType: RepeatType,
     onRepeatTypeSelected: (RepeatType) -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         RepeatTypeSelector(
-            selectedRepeatType = selectedRepeatType, onRepeatTypeSelected = onRepeatTypeSelected
+            selectedRepeatType = selectedRepeatType,
+            onRepeatTypeSelected = onRepeatTypeSelected
         )
         Text(
-            text = "Repeat on",
+            text = stringResource(R.string.text_repeat_on),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 4.dp, top = 4.dp),
@@ -157,19 +164,20 @@ fun RepeatOptionsSection(
 }
 
 @Composable
-fun RepeatTypeSelector(
+private fun RepeatTypeSelector(
     selectedRepeatType: RepeatType,
     onRepeatTypeSelected: (RepeatType) -> Unit,
 ) {
     val types = listOf(
-        RepeatType.EVERYDAY to "Everyday",
-        RepeatType.WEEKLY to "Weekly",
-        RepeatType.MONTHLY to "Monthly",
-        RepeatType.YEARLY to "Yearly"
+        RepeatType.EVERYDAY to stringResource(R.string.text_everyday),
+        RepeatType.WEEKLY to stringResource(R.string.text_weekly),
+        RepeatType.MONTHLY to stringResource(R.string.text_monthly),
+        RepeatType.YEARLY to stringResource(R.string.text_yearly),
     )
 
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         types.forEach { (type, label) ->
             val selected = type == selectedRepeatType
@@ -181,16 +189,26 @@ fun RepeatTypeSelector(
                         else MaterialTheme.colorScheme.surfaceVariant
                     )
                     .clickable { onRepeatTypeSelected(type) }
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 10.dp, vertical = 12.dp),
                 contentAlignment = Alignment.Center) {
                 Text(
                     text = label,
                     color = if (selected) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.labelMedium
                 )
             }
         }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, locale = "ru")
+@Composable
+private fun RepeatSectionPreview() {
+    DayVeeTheme {
+        RepeatSection()
     }
 }
 

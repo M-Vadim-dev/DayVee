@@ -10,6 +10,8 @@
     <string name="edit">Редактировать</string>
     <string name="add_task">Добавить задачу</string>
     <string name="no_tasks">Нет задач</string>
+    <string name="text_minute">Минута</string>
+    <string name="text_yearly">Ежегодно</string>
     <string name="nav_home">Home</string>
     <string name="nav_calendar">Календарь</string>
     <string name="nav_stats">Статистика</string>
@@ -33,4 +35,18 @@
         <item quantity="many">У вас на сегодня %d задач</item>
         <item quantity="other">У вас на сегодня %d задачи</item>
     </plurals>
+    <string name="hours_format">%dч</string>
+    <string name="minutes_format">%dмин</string>
+    <string name="duration_zero">0ч 0мин</string>
+    <string name="voice_input_prompt">Скажите описание задачи</string>
+    <string name="text_title_task">Заголовок</string>
+    <string name="text_description_task">Описание</string>
+    <string name="text_start_time_task">Время начала</string>
+    <string name="text_end_time_task">Время окончания</string>
+    <string name="text_hour">Час</string>
+    <string name="text_repeat_on">Повторять в</string>
+    <string name="text_everyday">Ежедневно</string>
+    <string name="text_weekly">Еженедельно</string>
+    <string name="text_monthly">Ежемесячно</string>
+    <string name="text_repeat">Повторять</string>
 </resources>

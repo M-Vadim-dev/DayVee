@@ -1,7 +1,8 @@
 package com.example.dayvee.ui.screens.main
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,9 +29,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dayvee.ui.components.CustomCircularProgress
+import com.example.dayvee.ui.theme.DayVeeTheme
 import com.example.dayvee.ui.theme.Montserrat
 
 @Composable
@@ -80,6 +84,9 @@ fun TaskItem(
                         fontSize = 16.sp,
                         textDecoration = if (isCompleted) TextDecoration.LineThrough else TextDecoration.None
                     ),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 Text(
@@ -90,7 +97,9 @@ fun TaskItem(
                         fontSize = 12.sp,
                     ),
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(vertical = 4.dp)
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
                 )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -122,10 +131,29 @@ fun TaskItem(
             CustomCircularProgress(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .clickable { onProgressClick },  //todo
+                    .combinedClickable(
+                        onClick = { },
+                        onLongClick = { onProgressClick() }
+                    ),
                 progress = progress,
                 size = 50.dp
             )
         }
+    }
+}
+
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun TaskItemPreview() {
+    DayVeeTheme {
+        TaskItem(
+            textTitle = "ЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадача 1Задача 1Задача 1Задача 1Задача 1Задача 1Задача 1",
+            textDescription = "Описание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннее",
+            timeStart = "09:00",
+            timeEnd = "10:00",
+            progress = 0.7f,
+            isCompleted = false,
+            onProgressClick = {}
+        )
     }
 }

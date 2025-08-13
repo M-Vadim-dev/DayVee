@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -38,78 +40,8 @@ class MainScreenViewModel @Inject constructor(
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
 
     init {
-        viewModelScope.launch {
-            val defaultUser = User(
-                status = 1,
-                username = "default_user",
-                password = "",
-                email = "",
-                question = "",
-                answer = ""
-            )
-            userRepository.initUserIfNotExists(defaultUser)
-            updateGreeting()
-
-            sharedDateRepository.selectedDate.collectLatest { selectedDate ->
-                val activeUser = userRepository.getActiveUser() ?: return@collectLatest
-                val tasksFlow = taskRepository.getTasksForDate(activeUser.uid, selectedDate)
-                tasksFlow.collect { tasks ->
-                    val now = System.currentTimeMillis()
-                    val updatedTasks = tasks.map { task ->
-                        task.copy(isDone = now > task.endTime)
-                    }
-
-                    _tasks.value = updatedTasks
-
-                    _uiState.update {
-                        it.copy(
-                            activeUser = activeUser,
-                            selectedDate = selectedDate,
-                            tasks = updatedTasks,
-                            isToday = selectedDate == LocalDate.now()
-                        )
-                    }
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            _tasks.collectLatest { tasks ->
-                if (tasks.isEmpty()) {
-                    _uiState.update { it.copy(tasksProgress = emptyMap()) }
-                    return@collectLatest
-                }
-
-                while (true) {
-                    val nowMillis = System.currentTimeMillis()
-                    val progressMap = tasks.associate { task ->
-                        val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
-                            TaskProgressInfo(task.id, 1f, 0L).also {
-                                if (!task.isDone) {
-                                    viewModelScope.launch {
-                                        taskRepository.updateTask(task.copy(isDone = true))
-                                    }
-                                }
-                            }
-                        } else {
-                            val startMillis = task.startTime
-                            val endMillis = task.endTime
-                            val total = (endMillis - startMillis).coerceAtLeast(1L)
-                            val elapsed = (nowMillis - startMillis).coerceIn(0L, total)
-                            val progress = elapsed.toFloat() / total
-                            val remaining = (endMillis - nowMillis).coerceAtLeast(0L)
-
-                            TaskProgressInfo(task.id, progress, remaining)
-                        }
-
-                        task.id to taskProgressInfo
-                    }
-
-                    _uiState.update { it.copy(tasksProgress = progressMap) }
-                    delay(1000L)
-                }
-            }
-        }
+        initUserAndTasks()
+        observeProgress()
     }
 
     internal fun deleteTask(task: Task) {
@@ -143,6 +75,104 @@ class MainScreenViewModel @Inject constructor(
     internal fun setDatePickerVisibility(isVisible: Boolean) {
         _uiState.update { currentState ->
             currentState.copy(isDatePickerVisible = isVisible)
+        }
+    }
+
+    internal fun markTaskDone(taskId: Int) {
+        viewModelScope.launch {
+            val currentTasks = _tasks.value
+            val taskToMark = currentTasks.find { it.id == taskId }
+            if (taskToMark != null && !taskToMark.isDone) {
+                val updatedTask = taskToMark.copy(isDone = true)
+                taskRepository.updateTask(updatedTask)
+
+                val updatedTasks = currentTasks.map {
+                    if (it.id == taskId) updatedTask else it
+                }
+                _tasks.value = updatedTasks
+            }
+        }
+    }
+
+    private fun initUserAndTasks() {
+        viewModelScope.launch {
+            val defaultUser = User(
+                status = 1,
+                username = "default_user",
+                password = "",
+                email = "",
+                question = "",
+                answer = ""
+            )
+            userRepository.initUserIfNotExists(defaultUser)
+            updateGreeting()
+
+            sharedDateRepository.selectedDate.collectLatest { selectedDate ->
+                val activeUser = userRepository.getActiveUser() ?: return@collectLatest
+                taskRepository.getTasksForDate(activeUser.uid, selectedDate)
+                    .collect { tasks ->
+                        val now = System.currentTimeMillis()
+                        val updatedTasks = tasks.map { task ->
+                            task.copy(isDone = now > task.endTime)
+                        }
+                        _tasks.value = updatedTasks
+                        _uiState.update {
+                            it.copy(
+                                activeUser = activeUser,
+                                selectedDate = selectedDate,
+                                tasks = updatedTasks,
+                                isToday = selectedDate == LocalDate.now()
+                            )
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun observeProgress() {
+        viewModelScope.launch {
+            combine(
+                _tasks,
+                tickerFlow(1000L)
+            ) { tasks, _ -> tasks }
+                .collectLatest { tasks ->
+                    if (tasks.isEmpty()) {
+                        _uiState.update { it.copy(tasksProgress = emptyMap()) }
+                        return@collectLatest
+                    }
+
+                    val nowMillis = System.currentTimeMillis()
+                    val progressMap = tasks.associate { task ->
+                        val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
+                            TaskProgressInfo(task.id, 1f, 0L).also {
+                                if (!task.isDone) {
+                                    viewModelScope.launch {
+                                        taskRepository.updateTask(task.copy(isDone = true))
+                                    }
+                                }
+                            }
+                        } else {
+                            val startMillis = task.startTime
+                            val endMillis = task.endTime
+                            val total = (endMillis - startMillis).coerceAtLeast(1L)
+                            val elapsed = (nowMillis - startMillis).coerceIn(0L, total)
+                            val progress = elapsed.toFloat() / total
+                            val remaining = (endMillis - nowMillis).coerceAtLeast(0L)
+
+                            TaskProgressInfo(task.id, progress, remaining)
+                        }
+                        task.id to taskProgressInfo
+                    }
+
+                    _uiState.update { it.copy(tasksProgress = progressMap) }
+                }
+        }
+    }
+
+    private fun tickerFlow(period: Long) = flow {
+        while (true) {
+            emit(Unit)
+            delay(period)
         }
     }
 

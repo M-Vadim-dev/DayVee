@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val isDarkTheme = true
-            DayVeeTheme(darkTheme = isDarkTheme, dynamicColor = false) {
+            DayVeeTheme(darkTheme = isDarkTheme) {
                 val insetsController = WindowInsetsControllerCompat(window, window.decorView)
                 insetsController.isAppearanceLightStatusBars = !isDarkTheme
                 insetsController.isAppearanceLightNavigationBars = !isDarkTheme

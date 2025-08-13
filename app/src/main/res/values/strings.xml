@@ -13,6 +13,20 @@
     <string name="add_task">Add Task</string>
     <string name="no_tasks">No tasks</string>
     <string name="edit_task" translatable="false">Edit Task</string>
+    <string name="voice_input_prompt">Describe your task</string>
+
+    <string name="text_title_task">Title</string>
+    <string name="text_description_task">Description</string>
+    <string name="text_start_time_task">Start Time</string>
+    <string name="text_end_time_task">End Time</string>
+    <string name="text_hour">Hour</string>
+    <string name="text_minute">Minute</string>
+    <string name="text_repeat">Repeat</string>
+    <string name="text_repeat_on">Repeat on</string>
+    <string name="text_everyday">Everyday</string>
+    <string name="text_weekly">Weekly</string>
+    <string name="text_monthly">Monthly</string>
+    <string name="text_yearly">Yearly</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_calendar">Calendar</string>
@@ -40,5 +54,9 @@
         <item quantity="one">You have %d task today</item>
         <item quantity="other">You have %d tasks today</item>
     </plurals>
+
+    <string name="hours_format">%dh</string>
+    <string name="minutes_format">%dmin</string>
+    <string name="duration_zero">0h 0min</string>
 
 </resources>
