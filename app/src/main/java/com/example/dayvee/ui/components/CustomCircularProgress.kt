@@ -23,7 +23,7 @@ import com.example.dayvee.ui.theme.MediumPurple
 fun CustomCircularProgress(
     modifier: Modifier,
     progress: Float,
-    size: Dp = 48.dp,
+    size: Dp = 46.dp,
     strokeWidth: Dp = 4.dp,
     progressColors: List<Color> = listOf(MediumOrchid, MediumPurple),
     backgroundColor: Color = Color.Gray.copy(alpha = 0.3f),
@@ -68,7 +68,7 @@ fun CustomCircularProgress(
             text = "${(animatedProgress * 100).toInt()}%",
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            fontSize = (size.value * 0.3f).sp,
+            fontSize = (size.value * 0.29f).sp,
             modifier = Modifier.align(Alignment.Center)
         )
     }

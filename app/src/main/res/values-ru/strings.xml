@@ -39,14 +39,19 @@
     <string name="minutes_format">%dмин</string>
     <string name="duration_zero">0ч 0мин</string>
     <string name="voice_input_prompt">Скажите описание задачи</string>
+    <string name="settings_language">Язык</string>
     <string name="text_title_task">Заголовок</string>
     <string name="text_description_task">Описание</string>
     <string name="text_start_time_task">Время начала</string>
     <string name="text_end_time_task">Время окончания</string>
+    <string name="text_icon">Значок</string>
     <string name="text_hour">Час</string>
     <string name="text_repeat_on">Повторять в</string>
     <string name="text_everyday">Ежедневно</string>
     <string name="text_weekly">Еженедельно</string>
     <string name="text_monthly">Ежемесячно</string>
     <string name="text_repeat">Повторять</string>
+    <string name="text_color">Цвет</string>
+    <string name="settings_dark_mode">Тёмная тема</string>
+    <string name="settings_notifications">Уведомления</string>
 </resources>

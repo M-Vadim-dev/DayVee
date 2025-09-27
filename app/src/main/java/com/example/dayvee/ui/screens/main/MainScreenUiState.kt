@@ -2,6 +2,7 @@ package com.example.dayvee.ui.screens.main
 
 import androidx.compose.runtime.Immutable
 import com.example.dayvee.domain.model.Task
+import com.example.dayvee.domain.model.TaskPriority
 import com.example.dayvee.domain.model.User
 import java.time.LocalDate
 import java.time.YearMonth
@@ -19,6 +20,7 @@ data class MainScreenUiState(
     val isToday: Boolean = false,
     val isCompleted: Boolean = false,
     val tasksProgress: Map<Int, TaskProgressInfo> = emptyMap(),
+    val priority: TaskPriority = TaskPriority.NONE,
 )
 
 @Immutable

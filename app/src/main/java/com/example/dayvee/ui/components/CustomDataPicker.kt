@@ -2,13 +2,16 @@ package com.example.dayvee.ui.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -59,11 +63,13 @@ fun CustomDatePicker(
     currentMonth: YearMonth,
     isDatePickerVisible: Boolean,
     hasTasks: Boolean,
+    isTasksDone: Boolean,
     isToday: Boolean,
     onDateSelected: (LocalDate) -> Unit,
     onMonthChange: (YearMonth) -> Unit,
     onShowPicker: () -> Unit,
-    onDismissPicker: () -> Unit
+    onDismissPicker: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -104,13 +110,13 @@ fun CustomDatePicker(
         }
     }
 
-    Column(modifier = Modifier.padding(bottom = 10.dp)) {
+    Column(modifier = modifier.padding(bottom = 10.dp)) {
         Text(
             text = stringResource(R.string.today),
             style = MaterialTheme.typography.titleMedium,
             color = if (isToday) MaterialTheme.colorScheme.onSecondary
             else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f),
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             modifier = Modifier
                 .padding(start = 18.dp)
                 .clickable {
@@ -146,7 +152,7 @@ fun CustomDatePicker(
                 text = formattedDate,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
@@ -161,7 +167,6 @@ fun CustomDatePicker(
             items(daysInMonth, key = { it.toEpochDay() }) { date ->
 
                 val isSelected = date == selectedDate
-
                 val scale = rememberItemSelectedScale(isSelected)
 
                 Column(
@@ -211,6 +216,20 @@ fun CustomDatePicker(
                             modifier = Modifier.padding(3.dp)
                         )
                     }
+
+                    if (hasTasks && !isSelected && !isTasksDone) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .aspectRatio(1f)
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = CircleShape
+                                )
+                        )
+                    }
+
                 }
             }
         }
@@ -232,6 +251,7 @@ fun CustomDatePickerPreview() {
             currentMonth = currentMonth,
             isDatePickerVisible = isVisible,
             hasTasks = true,
+            isTasksDone = false,
             isToday = true,
             onDateSelected = { selectedDate = it },
             onMonthChange = {},

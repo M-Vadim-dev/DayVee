@@ -14,7 +14,7 @@ import com.example.dayvee.utils.Constants.DB_NAME
 import com.example.dayvee.utils.Converters
 
 object DataBaseVersion {
-    internal const val DATA_BASE_VERSION = 1
+    internal const val DATA_BASE_VERSION = 3
 }
 
 @Database(
@@ -41,7 +41,9 @@ abstract class AppDataBase : RoomDatabase() {
                     context.applicationContext,
                     AppDataBase::class.java,
                     DB_NAME
-                ).build()
+                )
+                    .fallbackToDestructiveMigration(true)
+                    .build()
                 INSTANCE = instance
                 instance
             }

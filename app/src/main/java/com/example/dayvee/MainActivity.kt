@@ -1,9 +1,12 @@
 package com.example.dayvee
 
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.graphics.Color.TRANSPARENT
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,8 +24,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         requestNotificationPermissionIfNeeded()
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(TRANSPARENT),
+        )
         setContent {
             val isDarkTheme = true
             DayVeeTheme(darkTheme = isDarkTheme) {

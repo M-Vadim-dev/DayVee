@@ -15,10 +15,16 @@
     <string name="edit_task" translatable="false">Edit Task</string>
     <string name="voice_input_prompt">Describe your task</string>
 
+    <string name="settings_dark_mode">Dark theme</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_language">Language</string>
+
     <string name="text_title_task">Title</string>
     <string name="text_description_task">Description</string>
     <string name="text_start_time_task">Start Time</string>
     <string name="text_end_time_task">End Time</string>
+    <string name="text_color">Color</string>
+    <string name="text_icon">Icon</string>
     <string name="text_hour">Hour</string>
     <string name="text_minute">Minute</string>
     <string name="text_repeat">Repeat</string>

@@ -86,6 +86,7 @@ import com.example.dayvee.ui.components.bottomBar.CustomBottomBar
 import com.example.dayvee.ui.components.bottomBar.bottomBarItems
 import com.example.dayvee.ui.screens.addTask.AddTaskScreen
 import com.example.dayvee.ui.screens.addTask.AddTaskScreenViewModel
+import com.example.dayvee.ui.screens.addTask.toColor
 import com.example.dayvee.ui.theme.Gradients.verticalBlackOverlayGradient
 import com.example.dayvee.ui.theme.Gradients.verticalDarkPurpleGradient
 import com.example.dayvee.ui.theme.Gradients.verticalMidnightBlueGradient
@@ -223,48 +224,43 @@ fun MainScreen(
                 }
             })
     }) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .offset { IntOffset(0, contentOffset.value.roundToInt()) }
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                CustomDatePicker(
-                    selectedDate = uiState.selectedDate,
-                    currentMonth = uiState.currentMonth,
-                    isDatePickerVisible = uiState.isDatePickerVisible,
-                    isToday = uiState.isToday,
-                    hasTasks = uiState.tasks.any { it.date == uiState.selectedDate },
-                    onDateSelected = mainScreenViewModel::setSelectedDate,
-                    onMonthChange = mainScreenViewModel::setCurrentMonth,
-                    onShowPicker = { mainScreenViewModel.setDatePickerVisibility(true) },
-                    onDismissPicker = { mainScreenViewModel.setDatePickerVisibility(false) }
+            CustomDatePicker(
+                selectedDate = uiState.selectedDate,
+                currentMonth = uiState.currentMonth,
+                isDatePickerVisible = uiState.isDatePickerVisible,
+                isToday = uiState.isToday,
+                isTasksDone = uiState.tasks.any { it.date != uiState.selectedDate && !it.isDone }, //todo
+                hasTasks = uiState.tasks.any { it.date == uiState.selectedDate },
+                onDateSelected = mainScreenViewModel::setSelectedDate,
+                onMonthChange = mainScreenViewModel::setCurrentMonth,
+                onShowPicker = { mainScreenViewModel.setDatePickerVisibility(true) },
+                onDismissPicker = { mainScreenViewModel.setDatePickerVisibility(false) }
+            )
+
+            Box(modifier = Modifier.weight(1f)) {
+                MainScreenContent(
+                    tasks = uiState.tasks,
+                    tasksProgress = uiState.tasksProgress,
+                    onClickTask = { task ->
+                        navController.navigate(Screen.Task.createRoute(task.id))
+                    },
+                    onMarkTaskDone = { task ->
+                        mainScreenViewModel.markTaskDone(task.id)
+                    },
+                    onEditTaskClick = { task ->
+                        mainScreenViewModel.onTaskSelected(task.id)
+                        isAnimated = true
+                        showAddTask = true
+                    },
+                    onDeleteTaskClick = mainScreenViewModel::deleteTask
                 )
-
-                Box(modifier = Modifier.weight(1f)) {
-                    MainScreenContent(
-                        tasks = uiState.tasks,
-                        tasksProgress = uiState.tasksProgress,
-                        onClickTask = { task ->
-                            navController.navigate(Screen.Task.createRoute(task.id))
-                        },
-                        onMarkTaskDone = { task ->
-                            mainScreenViewModel.markTaskDone(task.id)
-                        },
-                        onEditTaskClick = { task ->
-                            mainScreenViewModel.onTaskSelected(task.id)
-                            isAnimated = true
-                            showAddTask = true
-                        },
-                        onDeleteTaskClick = mainScreenViewModel::deleteTask
-                    )
-                }
             }
-
-            val topOffset = 125.dp
 
             AnimatedVisibility(
                 visible = showAddTask,
@@ -276,29 +272,19 @@ fun MainScreen(
                     targetOffsetY = { fullHeight -> fullHeight },
                     animationSpec = tween()
                 ),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = topOffset)
             ) {
-                Box(
-                    Modifier
-                        .matchParentSize()
-                        .padding(top = topOffset)
-                        .background(MaterialTheme.colorScheme.surface)
-                ) {
-                    AddTaskScreen(
-                        onDismiss = {
-                            isAnimated = false
-                            showAddTask = false
-                        },
-                        snackBarHostState = snackBarHostState
-                    )
-                }
+                AddTaskScreen(
+                    onDismiss = {
+                        isAnimated = false
+                        showAddTask = false
+                    },
+                    snackBarHostState = snackBarHostState,
+                )
             }
         }
-
     }
 }
+
 
 @Composable
 private fun MainTopBarTitle(
@@ -369,8 +355,7 @@ private fun MainScreenContent(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -402,7 +387,7 @@ private fun MainScreenContent(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(120.dp)
+                                .height(90.dp)
                                 .padding(end = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -485,11 +470,13 @@ private fun MainScreenContent(
                             }
 
                             SwipeTaskItem(
-                                textTitle = task.title,
-                                textDescription = task.description,
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(6.dp),
+                                textTitle = task.title,
+                                textDescription = task.description,
+                                priorityColor = task.priority.toColor(),
+                                icon = task.icon,
                                 onClick = { onClickTask(task) },
                                 onProgressLongClick = { onMarkTaskDone(task) },
                                 onEdit = { onEditTaskClick(task) },

@@ -44,22 +44,4 @@ class AppModule {
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
 
-//    @Provides
-//    @Singleton
-//    fun provideOkHttpClient(): OkHttpClient {
-//        val logging = HttpLoggingInterceptor().apply {
-//            level = HttpLoggingInterceptor.Level.BODY
-//        }
-//        return OkHttpClient.Builder().addInterceptor(logging).build()
-//    }
-
-//    @Provides
-//    @Singleton
-//    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-//        return Retrofit.Builder()
-//            .baseUrl(API_BASE_URL)
-//            .client(okHttpClient)
-//            .addConverterFactory(Json.asConverterFactory(CONTENT_TYPE.toMediaType()))
-//            .build()
-//    }
 }

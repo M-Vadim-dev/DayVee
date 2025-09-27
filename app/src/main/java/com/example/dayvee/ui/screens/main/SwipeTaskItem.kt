@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
@@ -30,9 +31,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,19 +45,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.example.dayvee.R
+import com.example.dayvee.domain.model.TaskIcon
+import com.example.dayvee.ui.theme.CriticalRed
 import com.example.dayvee.ui.theme.DayVeeTheme
+import com.example.dayvee.ui.theme.MidnightBlue
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @Composable
 fun SwipeTaskItem(
+    modifier: Modifier = Modifier,
     textTitle: String,
     textDescription: String,
+    priorityColor: Color,
+    icon: TaskIcon?,
     timeStart: String,
     timeEnd: String,
     isComplete: Boolean,
     progress: Float,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     onProgressLongClick: () -> Unit = {},
     onDelete: () -> Unit = {},
@@ -191,12 +199,28 @@ fun SwipeTaskItem(
             TaskItem(
                 textTitle = textTitle,
                 textDescription = textDescription,
+                iconPainter = when (icon) {
+                    is TaskIcon.Resource -> painterResource(id = icon.resId)
+                    is TaskIcon.Custom -> null // todo
+                    is TaskIcon.Default -> painterResource(id = R.drawable.ic_assignment)
+                    null -> null
+                },
+                imageVector = if (icon == null) Icons.Filled.AccountBox else null,
+                colorLabel = priorityColor,
                 isCompleted = isComplete,
                 progress = progress,
                 onProgressClick = onProgressLongClick,
                 timeStart = timeStart,
                 timeEnd = timeEnd
             )
+
+            if (isComplete) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(MidnightBlue.copy(alpha = 0.6f))
+                )
+            }
         }
     }
 }
@@ -205,14 +229,33 @@ fun SwipeTaskItem(
 @Composable
 private fun SwipeTaskItemActivePreview() {
     DayVeeTheme {
-        SwipeTaskItem(
-            textTitle = "Prepare presentationPrepare presentationPrepare presentation",
-            textDescription = "Slides for Monday meeting.Slides for Monday meeting.Slides for Monday meeting.Slides for Monday meeting.",
-            timeStart = "14:00",
-            timeEnd = "15:30",
-            isComplete = false,
-            progress = 0.35f,
-            modifier = Modifier.height(90.dp)
-        )
+        Column {
+            SwipeTaskItem(
+                textTitle = "Prepare presentation",
+                textDescription = "Slides for Monday meeting",
+                priorityColor = CriticalRed,
+                icon = TaskIcon.Resource(R.drawable.ic_assignment),
+                timeStart = "13:00",
+                timeEnd = "13:30",
+                isComplete = true,
+                progress = 1f,
+                modifier = Modifier.height(90.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            SwipeTaskItem(
+                textTitle = "Prepare presentation",
+                textDescription = "Slides for Monday meeting",
+                priorityColor = CriticalRed,
+                icon = TaskIcon.Resource(R.drawable.ic_assignment),
+                timeStart = "14:00",
+                timeEnd = "15:30",
+                isComplete = false,
+                progress = 0.35f,
+                modifier = Modifier.height(90.dp)
+            )
+
+        }
     }
 }

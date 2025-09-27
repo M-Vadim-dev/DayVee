@@ -26,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -34,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dayvee.ui.components.CustomCircularProgress
+import com.example.dayvee.ui.theme.CriticalRed
 import com.example.dayvee.ui.theme.DayVeeTheme
 import com.example.dayvee.ui.theme.Montserrat
 
@@ -41,8 +45,11 @@ import com.example.dayvee.ui.theme.Montserrat
 fun TaskItem(
     textTitle: String,
     textDescription: String,
+    imageVector: ImageVector? = null,
+    iconPainter: Painter? = null,
     timeStart: String,
     timeEnd: String,
+    colorLabel: Color = Color.Transparent,
     progress: Float,
     isCompleted: Boolean,
     onProgressClick: () -> Unit = {}
@@ -54,21 +61,50 @@ fun TaskItem(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(16.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .clip(shape = RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxSize()
         ) {
-            Icon(
-                imageVector = Icons.Filled.AccountBox,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(38.dp),
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(6.dp)
+                    .background(
+                        color = colorLabel,
+                        shape = RoundedCornerShape(4.dp)
+                    ),
+                contentAlignment = Alignment.CenterStart
+            ) {
 
-            Spacer(modifier = Modifier.width(16.dp))
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            when {
+                iconPainter != null -> Icon(
+                    painter = iconPainter,
+                    contentDescription = null,
+                    tint = colorLabel,
+                    modifier = Modifier.size(38.dp)
+                )
+                imageVector != null -> Icon(
+                    imageVector = imageVector,
+                    contentDescription = null,
+                    tint = colorLabel,
+                    modifier = Modifier.size(38.dp)
+                )
+                else -> Icon(
+                    imageVector = Icons.Filled.AccountBox,
+                    contentDescription = null,
+                    tint = colorLabel,
+                    modifier = Modifier.size(38.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -89,18 +125,18 @@ fun TaskItem(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-                Text(
-                    text = textDescription,
-                    style = TextStyle(
-                        fontFamily = Montserrat,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 12.sp,
-                    ),
-                    color = MaterialTheme.colorScheme.outline,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
-                )
+//                Text(
+//                    text = textDescription,
+//                    style = TextStyle(
+//                        fontFamily = Montserrat,
+//                        fontWeight = FontWeight.Normal,
+//                        fontSize = 12.sp,
+//                    ),
+//                    color = MaterialTheme.colorScheme.outline,
+//                    maxLines = 1,
+//                    overflow = TextOverflow.Ellipsis,
+//                    modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
+//                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(vertical = 4.dp)
@@ -126,17 +162,16 @@ fun TaskItem(
                 }
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-
             CustomCircularProgress(
                 modifier = Modifier
+                    .padding(12.dp)
                     .clip(CircleShape)
                     .combinedClickable(
                         onClick = { },
                         onLongClick = { onProgressClick() }
                     ),
                 progress = progress,
-                size = 50.dp
+                size = 45.dp
             )
         }
     }
@@ -147,10 +182,11 @@ fun TaskItem(
 private fun TaskItemPreview() {
     DayVeeTheme {
         TaskItem(
-            textTitle = "ЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадачаЗадача 1Задача 1Задача 1Задача 1Задача 1Задача 1Задача 1",
-            textDescription = "Описание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннееОписание задачи, которое может быть длиннее",
+            textTitle = "Устренняя разминка",
+            textDescription = "Описание задачи",
             timeStart = "09:00",
             timeEnd = "10:00",
+            colorLabel = CriticalRed,
             progress = 0.7f,
             isCompleted = false,
             onProgressClick = {}

@@ -7,6 +7,8 @@ import com.example.dayvee.data.repository.SelectedTaskRepository
 import com.example.dayvee.data.repository.SharedDateRepository
 import com.example.dayvee.domain.TaskValidationError
 import com.example.dayvee.domain.model.Task
+import com.example.dayvee.domain.model.TaskIcon
+import com.example.dayvee.domain.model.TaskPriority
 import com.example.dayvee.domain.model.User
 import com.example.dayvee.domain.repository.TaskRepository
 import com.example.dayvee.domain.repository.UserRepository
@@ -40,6 +42,9 @@ data class AddTaskScreenUiState(
     val startMinute: String = "",
     val endHour: String = "",
     val endMinute: String = "",
+
+    val priority: TaskPriority = TaskPriority.MEDIUM,
+    val icon: TaskIcon = TaskIcon.Default,
 
     val isStartHourValid: Boolean = true,
     val isStartMinuteValid: Boolean = true,
@@ -149,7 +154,9 @@ class AddTaskScreenViewModel @Inject constructor(
                 date = selectedDate,
                 startTime = startMillis,
                 endTime = endMillis,
-                isDone = isDone
+                isDone = isDone,
+                priority = state.priority,
+                icon = state.icon,
             )
 
             if (state.isEditMode && state.editedTaskId != null) {
@@ -179,9 +186,19 @@ class AddTaskScreenViewModel @Inject constructor(
                     isAddEnabled = false,
                     isEditMode = false,
                     editedTaskId = null,
+                    priority = TaskPriority.MEDIUM,
+                    icon = TaskIcon.Default,
                 )
             }
         }
+    }
+
+    internal fun onPriorityChange(priority: TaskPriority) {
+        _uiState.update { it.copy(priority = priority) }
+    }
+
+    internal fun onIconSelected(icon: TaskIcon) {
+        _uiState.update { it.copy(icon = icon) }
     }
 
     internal fun loadTaskById(taskId: Int) {
@@ -280,7 +297,9 @@ class AddTaskScreenViewModel @Inject constructor(
                 endMinute = endTime.minute.toString().padStart(2, '0'),
                 selectedDate = task.date,
                 isEditMode = true,
-                editedTaskId = task.id
+                editedTaskId = task.id,
+                priority = task.priority,
+                icon = task.icon
             )
         }
     }

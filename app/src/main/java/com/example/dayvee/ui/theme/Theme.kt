@@ -29,11 +29,13 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = GhostWhite,
 
     outline = SlateGray,
+
+    error = CriticalRed,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
-    secondary = PurpleGrey40,
+    secondary = SlateGray50,
     tertiary = Pink40,
 
 )
