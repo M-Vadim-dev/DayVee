@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -131,54 +130,61 @@ class MainScreenViewModel @Inject constructor(
 
     private fun observeProgress() {
         viewModelScope.launch {
-            combine(
-                _tasks,
-                tickerFlow(1000L)
-            ) { tasks, _ -> tasks }
-                .collectLatest { tasks ->
-                    if (tasks.isEmpty()) {
-                        _uiState.update { it.copy(tasksProgress = emptyMap()) }
-                        return@collectLatest
+            tickerFlow().collect {
+                val now = System.currentTimeMillis()
+                val oldTasks = _tasks.value
+
+                val updatedTasks = oldTasks.map { task -> updateTaskStatus(task, now) }
+
+                val progressMap = updatedTasks.associate { task ->
+                    val progress = if (task.isDone) 1f
+                    else {
+                        val total = (task.endTime - task.startTime).coerceAtLeast(1L)
+                        val elapsed = (now - task.startTime).coerceIn(0L, total)
+                        elapsed.toFloat() / total
                     }
-
-                    val nowMillis = System.currentTimeMillis()
-                    val progressMap = tasks.associate { task ->
-                        val taskProgressInfo = if (task.isDone || nowMillis >= task.endTime) {
-                            TaskProgressInfo(task.id, 1f, 0L).also {
-                                if (!task.isDone) {
-                                    viewModelScope.launch {
-                                        taskRepository.updateTask(task.copy(isDone = true))
-                                    }
-                                }
-                            }
-                        } else {
-                            val startMillis = task.startTime
-                            val endMillis = task.endTime
-                            val total = (endMillis - startMillis).coerceAtLeast(1L)
-                            val elapsed = (nowMillis - startMillis).coerceIn(0L, total)
-                            val progress = elapsed.toFloat() / total
-                            val remaining = (endMillis - nowMillis).coerceAtLeast(0L)
-
-                            TaskProgressInfo(task.id, progress, remaining)
-                        }
-                        task.id to taskProgressInfo
-                    }
-
-                    _uiState.update { it.copy(tasksProgress = progressMap) }
+                    val remaining = (task.endTime - now).coerceAtLeast(0L)
+                    task.id to TaskProgressInfo(task.id, progress, remaining)
                 }
+
+                _uiState.update {
+                    it.copy(tasks = updatedTasks, tasksProgress = progressMap)
+                }
+
+                updatedTasks.forEachIndexed { index, task ->
+                    val oldTask = oldTasks[index]
+                    if (task.isStarted != oldTask.isStarted || task.isDone != oldTask.isDone) {
+                        viewModelScope.launch {
+                            taskRepository.updateTask(task)
+                        }
+                    }
+                }
+
+                _tasks.value = updatedTasks
+            }
         }
     }
 
-    private fun tickerFlow(period: Long) = flow {
+    private fun tickerFlow() = flow {
         while (true) {
             emit(Unit)
-            delay(period)
+            delay(1000L)
         }
     }
 
     private fun updateGreeting() {
         val greeting = greetingUseCase.getGreeting()
         _uiState.update { it.copy(greeting = greeting) }
+    }
+
+    private fun updateTaskStatus(task: Task, now: Long = System.currentTimeMillis()): Task {
+        val startMillis = task.startTime
+        val endMillis = task.endTime
+
+        val isDone = now >= endMillis
+        val isStarted = now >= startMillis && now < endMillis && !isDone
+
+        return task.copy(isDone = isDone, isStarted = isStarted)
     }
 
     private fun updateTasksForDate(date: LocalDate) {

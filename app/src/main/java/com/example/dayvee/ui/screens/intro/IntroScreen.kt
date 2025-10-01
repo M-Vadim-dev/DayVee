@@ -18,31 +18,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dayvee.R
 import com.example.dayvee.navigation.Screen
 import com.example.dayvee.ui.components.CustomGradientButton
-import com.example.dayvee.ui.theme.DarkSlateGray
 import com.example.dayvee.ui.theme.DayVeeTheme
-import com.example.dayvee.ui.theme.GhostWhite
-import com.example.dayvee.ui.theme.MidnightBlue
-import com.example.dayvee.ui.theme.Montserrat
-import com.example.dayvee.ui.theme.SlateGray
 
 @Composable
 fun IntroScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MidnightBlue)
+            .background(MaterialTheme.colorScheme.background)
             .systemBarsPadding()
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -56,26 +48,17 @@ fun IntroScreen(navController: NavHostController) {
         )
         Text(
             text = stringResource(R.string.app_title),
-            style = TextStyle(
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.SemiBold,
-                color = GhostWhite,
-                fontSize = 40.sp,
-                textAlign = TextAlign.Center
-            ),
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.onPrimary,
+            textAlign = TextAlign.Center,
             maxLines = 3,
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
             text = stringResource(R.string.intro_text),
-            style = TextStyle(
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.Normal,
-                color = SlateGray,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                textAlign = TextAlign.Center,
-            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline,
+            textAlign = TextAlign.Center,
             maxLines = 6,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(vertical = 16.dp)
@@ -95,17 +78,13 @@ fun IntroScreen(navController: NavHostController) {
                 .fillMaxWidth()
                 .height(70.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = DarkSlateGray,
+                containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
             Text(
                 text = stringResource(R.string.sign_in),
-                style = TextStyle(
-                    fontFamily = Montserrat,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                )
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
@@ -116,12 +95,10 @@ fun IntroScreen(navController: NavHostController) {
 private fun IntroScreenPreview() {
     val fakeNavController = rememberNavControllerFake()
 
-    DayVeeTheme(darkTheme = true) {
+    DayVeeTheme {
         IntroScreen(navController = fakeNavController)
     }
 }
 
 @Composable
-private fun rememberNavControllerFake(): NavHostController {
-    return rememberNavController()
-}
+private fun rememberNavControllerFake(): NavHostController = rememberNavController()

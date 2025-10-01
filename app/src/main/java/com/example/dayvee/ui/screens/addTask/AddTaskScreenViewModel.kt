@@ -10,6 +10,7 @@ import com.example.dayvee.domain.model.Task
 import com.example.dayvee.domain.model.TaskIcon
 import com.example.dayvee.domain.model.TaskPriority
 import com.example.dayvee.domain.model.User
+import com.example.dayvee.domain.repository.SettingsRepository
 import com.example.dayvee.domain.repository.TaskRepository
 import com.example.dayvee.domain.repository.UserRepository
 import com.example.dayvee.managers.TaskStartAlarmManager
@@ -54,6 +55,7 @@ data class AddTaskScreenUiState(
     val isAddEnabled: Boolean = false,
     val isEditMode: Boolean = false,
     val editedTaskId: Int? = null,
+    val useManualTimeInputs: Boolean = false,
 )
 
 @HiltViewModel
@@ -62,6 +64,7 @@ class AddTaskScreenViewModel @Inject constructor(
     private val selectedTaskRepository: SelectedTaskRepository,
     private val taskRepository: TaskRepository,
     private val userRepository: UserRepository,
+    private val settingsRepository: SettingsRepository,
     private val taskStartAlarmManager: TaskStartAlarmManager,
 ) : ViewModel() {
 
@@ -85,6 +88,12 @@ class AddTaskScreenViewModel @Inject constructor(
         viewModelScope.launch {
             selectedTaskRepository.selectedTaskId.collectLatest { taskId ->
                 taskId?.let { loadTaskById(it) }
+            }
+        }
+
+        viewModelScope.launch {
+            settingsRepository.useManualTimeInputs.collect { flag ->
+                _uiState.update { it.copy(useManualTimeInputs = flag) }
             }
         }
     }
@@ -146,6 +155,8 @@ class AddTaskScreenViewModel @Inject constructor(
                 return@launch
             }
 
+            val isStarted = nowMillis >= startMillis && !isDone
+
             val taskToSave = Task(
                 id = state.editedTaskId ?: 0,
                 userId = user.uid,
@@ -155,6 +166,7 @@ class AddTaskScreenViewModel @Inject constructor(
                 startTime = startMillis,
                 endTime = endMillis,
                 isDone = isDone,
+                isStarted = isStarted,
                 priority = state.priority,
                 icon = state.icon,
             )

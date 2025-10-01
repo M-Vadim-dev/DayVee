@@ -84,9 +84,9 @@ import com.example.dayvee.ui.components.CustomDatePicker
 import com.example.dayvee.ui.components.CustomGradientBorderIcon
 import com.example.dayvee.ui.components.bottomBar.CustomBottomBar
 import com.example.dayvee.ui.components.bottomBar.bottomBarItems
+import com.example.dayvee.ui.extensions.toColor
 import com.example.dayvee.ui.screens.addTask.AddTaskScreen
 import com.example.dayvee.ui.screens.addTask.AddTaskScreenViewModel
-import com.example.dayvee.ui.screens.addTask.toColor
 import com.example.dayvee.ui.theme.Gradients.verticalBlackOverlayGradient
 import com.example.dayvee.ui.theme.Gradients.verticalDarkPurpleGradient
 import com.example.dayvee.ui.theme.Gradients.verticalMidnightBlueGradient
@@ -285,7 +285,6 @@ fun MainScreen(
     }
 }
 
-
 @Composable
 private fun MainTopBarTitle(
     shouldHide: Boolean,
@@ -370,7 +369,7 @@ private fun MainScreenContent(
                 ) {
                     Text(
                         text = stringResource(R.string.no_tasks),
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
                     )
                 }

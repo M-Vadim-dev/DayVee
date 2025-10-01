@@ -51,26 +51,9 @@ import com.example.dayvee.R
 import com.example.dayvee.domain.model.TaskIcon
 import com.example.dayvee.domain.model.TaskIcons.defaultIcons
 import com.example.dayvee.domain.model.TaskPriority
-import com.example.dayvee.ui.theme.CriticalRed
-import com.example.dayvee.ui.theme.CustomGreen
+import com.example.dayvee.ui.extensions.toColor
 import com.example.dayvee.ui.theme.DayVeeTheme
-import com.example.dayvee.ui.theme.HighOrange
-import com.example.dayvee.ui.theme.MediumYellow
-import com.example.dayvee.ui.theme.MinorBlue
 import com.example.dayvee.ui.theme.NoneTransparent
-
-@Composable
-fun TaskPriority.toColor(): Color = when (this) {
-    TaskPriority.CRITICAL -> CriticalRed
-    TaskPriority.URGENT -> HighOrange
-    TaskPriority.HIGH -> MediumYellow
-    TaskPriority.MEDIUM -> MaterialTheme.colorScheme.primary
-    TaskPriority.LOW -> MaterialTheme.colorScheme.tertiary
-    TaskPriority.MINOR -> MinorBlue
-    TaskPriority.OPTIONAL -> MaterialTheme.colorScheme.onPrimary
-    TaskPriority.CUSTOM -> CustomGreen
-    TaskPriority.NONE -> NoneTransparent
-}
 
 @Composable
 fun TaskCustomizationSection(
@@ -111,7 +94,7 @@ fun TaskCustomizationSection(
 
             Text(
                 text = stringResource(R.string.text_color),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(8.dp)
             )
 
@@ -153,7 +136,7 @@ fun TaskCustomizationSection(
 
             Text(
                 text = stringResource(R.string.text_icon),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(8.dp)
             )
         }

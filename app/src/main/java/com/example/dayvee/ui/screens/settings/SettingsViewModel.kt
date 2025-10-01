@@ -40,6 +40,8 @@ class SettingsViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         "ru"
     )
+    val manualTimeInputs = settingsRepository.useManualTimeInputs
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun toggleDarkMode(enabled: Boolean) {
         viewModelScope.launch {
@@ -50,6 +52,12 @@ class SettingsViewModel @Inject constructor(
     fun toggleNotifications(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setNotifications(enabled)
+        }
+    }
+
+    fun toggleUseManualTimeInputs(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setUseManualTimeInputs(enabled)
         }
     }
 

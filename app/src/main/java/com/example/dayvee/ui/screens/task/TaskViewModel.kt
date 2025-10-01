@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dayvee.domain.formatter.DurationFormatter
+import com.example.dayvee.domain.model.TaskPriority
 import com.example.dayvee.domain.repository.TaskRepository
 import com.example.dayvee.utils.DateUtils.formatDate
 import com.example.dayvee.utils.DateUtils.formatTime
@@ -27,6 +28,8 @@ data class TaskUiState(
     val date: String = "",
     val reminderTime: String = "",
     val repeatInterval: String = "",
+    val progress: Float = 0f,
+    val priority: TaskPriority = TaskPriority.NONE,
     val isDone: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -54,6 +57,7 @@ class TaskViewModel @Inject constructor(
                 val task = taskRepository.getTaskById(taskId)
                 task?.let {
                     val duration = calculateTotalDuration(task.startTime, task.endTime)
+                    val progress = calculateProgress(task.startTime, task.endTime)
 
                     _uiState.value = TaskUiState(
                         title = task.title,
@@ -66,10 +70,12 @@ class TaskViewModel @Inject constructor(
                         date = formatDate(task.date),
                         reminderTime = task.reminderTime.toString(),
                         repeatInterval = task.repeatInterval.toString(),
+                        progress = progress,
+                        priority = task.priority,
                         isDone = task.isDone
                     )
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.value = TaskUiState(
                     isLoading = false,
                     errorMessage = "Ошибка загрузки задачи"
@@ -78,12 +84,18 @@ class TaskViewModel @Inject constructor(
         }
     }
 
-    private fun calculateTotalDuration(
-        startMillis: Long,
-        endMillis: Long,
-    ): Duration =
+    private fun calculateTotalDuration(startMillis: Long, endMillis: Long): Duration =
         Duration.between(
             Instant.ofEpochMilli(startMillis).atZone(ZoneId.systemDefault()).toLocalTime(),
             Instant.ofEpochMilli(endMillis).atZone(ZoneId.systemDefault()).toLocalTime()
         ).let { if (it.isNegative) it.plusDays(1) else it }
+
+    private fun calculateProgress(startMillis: Long, endMillis: Long): Float {
+        val now = Instant.now().toEpochMilli()
+        return when {
+            now >= endMillis -> 1f
+            now <= startMillis -> 0f
+            else -> (now - startMillis).toFloat() / (endMillis - startMillis).toFloat()
+        }
+    }
 }

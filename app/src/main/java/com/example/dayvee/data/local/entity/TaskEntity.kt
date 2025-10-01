@@ -22,6 +22,7 @@ data class TaskEntity(
     @ColumnInfo(name = "reminder_time") val reminderTime: Long? = null,
     @ColumnInfo(name = "repeat_interval") val repeatInterval: String? = null,
     @ColumnInfo(name = "is_done") val isDone: Boolean = false,
+    @ColumnInfo(name = "is_started") val isStarted: Boolean = false,
     val priority: TaskPriority = TaskPriority.NONE,
     val icon: TaskIcon = TaskIcon.Default,
 )

@@ -5,6 +5,7 @@ import com.example.dayvee.data.mapper.toDomain
 import com.example.dayvee.data.mapper.toEntity
 import com.example.dayvee.di.AppModule.IoDispatcher
 import com.example.dayvee.domain.model.Task
+import com.example.dayvee.domain.model.TaskPriorityCount
 import com.example.dayvee.domain.repository.TaskRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,29 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun getTaskById(taskId: Int): Task? = withContext(ioDispatcher) {
         taskDao.getTaskById(taskId)?.toDomain()
     }
+
+    override fun getTotalTasks(): Flow<Int> = taskDao.getTotalTasks()
+
+    override fun getCompletedTasks(): Flow<Int> = taskDao.getCompletedTasks()
+
+    override fun getInProgressTasks(): Flow<Int> = taskDao.getInProgressTasks()
+
+    override fun getPendingTasks(): Flow<Int> = taskDao.getPendingTasks()
+
+    override fun getTasksCountForDate(date: LocalDate): Flow<Int> =
+        taskDao.getTasksCountForDate(date)
+
+    override fun getCompletedTasksForDate(date: LocalDate): Flow<Int> =
+        taskDao.getCompletedTasksForDate(date)
+
+    override fun getPendingTasksForDate(date: LocalDate): Flow<Int> =
+        taskDao.getPendingTasksForDate(date)
+
+    override fun getTasksCountForRange(start: LocalDate, end: LocalDate): Flow<Int> =
+        taskDao.getTasksCountForRange(start, end)
+
+    override fun getTasksCountByPriority(): Flow<List<TaskPriorityCount>> =
+        taskDao.getTasksCountByPriority()
 
     override suspend fun addTask(task: Task): Long = withContext(ioDispatcher) {
         taskDao.insert(task.toEntity())

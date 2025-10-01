@@ -14,6 +14,10 @@
     <string name="no_tasks">No tasks</string>
     <string name="edit_task" translatable="false">Edit Task</string>
     <string name="voice_input_prompt">Describe your task</string>
+    <string name="total">Total</string>
+    <string name="task">task</string>
+    <string name="task_progress">Task Progress</string>
+    <string name="tasks_by_priority">Tasks by Priority</string>
 
     <string name="settings_dark_mode">Dark theme</string>
     <string name="settings_notifications">Notifications</string>
@@ -34,10 +38,27 @@
     <string name="text_monthly">Monthly</string>
     <string name="text_yearly">Yearly</string>
 
+    <string name="stats_completed">Completed</string>
+    <string name="stats_in_progress">In Progress</string>
+    <string name="stats_not_completed">Pending</string>
+    <string name="stats_unfinished_tasks">Unfinished Tasks</string>
+    <string name="stats_finished_tasks">Finished Tasks</string>
+
     <string name="nav_home">Home</string>
     <string name="nav_calendar">Calendar</string>
     <string name="nav_stats">Stats</string>
     <string name="nav_setting">Setting</string>
+    <string name="nav_back">Back</string>
+
+    <string name="priority_critical">Critical</string>
+    <string name="priority_urgent">Urgent</string>
+    <string name="priority_high">High</string>
+    <string name="priority_medium">Medium</string>
+    <string name="priority_low">Low</string>
+    <string name="priority_minor">Minor</string>
+    <string name="priority_optional">Optional</string>
+    <string name="priority_custom">Custom</string>
+    <string name="priority_none">None</string>
 
     <string name="error_start_time_in_past">Cannot create a task in the past.</string>
     <string name="error_end_time_before_start">End time cannot be before start time.</string>
@@ -54,7 +75,7 @@
     <string name="greeting_evening">Good Evening</string>
     <string name="greeting_night">Good Night</string>
 
-    <string name="notification_title" translatable="false">Task starting...</string>
+    <string name="notification_title">Task starting</string>
 
     <plurals name="tasks_for_today">
         <item quantity="one">You have %d task today</item>

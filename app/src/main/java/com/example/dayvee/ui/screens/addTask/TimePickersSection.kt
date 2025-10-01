@@ -75,7 +75,7 @@ private fun TimePickerColumn(
             )
             Text(
                 text = stringResource(labelRes),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

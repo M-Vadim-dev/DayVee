@@ -14,6 +14,7 @@ fun TaskEntity.toDomain(): Task = Task(
     reminderTime = reminderTime,
     repeatInterval = repeatInterval,
     isDone = isDone,
+    isStarted = isStarted,
     priority = priority,
     icon = icon,
 )
@@ -29,6 +30,7 @@ fun Task.toEntity(): TaskEntity = TaskEntity(
     reminderTime = reminderTime,
     repeatInterval = repeatInterval,
     isDone = isDone,
+    isStarted = isStarted,
     priority = priority,
     icon = icon,
 )

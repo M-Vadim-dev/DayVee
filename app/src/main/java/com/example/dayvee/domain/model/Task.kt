@@ -13,6 +13,7 @@ data class Task(
     val reminderTime: Long? = null,
     val repeatInterval: String? = null,
     val isDone: Boolean = false,
+    val isStarted: Boolean = false,
     val priority: TaskPriority = TaskPriority.NONE,
     val icon: TaskIcon = TaskIcon.Default,
 )

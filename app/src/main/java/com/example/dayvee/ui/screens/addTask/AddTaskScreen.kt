@@ -141,24 +141,26 @@ private fun AddTaskScreenContent(
             onIconSelected = onIconSelected
         )
         Spacer(modifier = Modifier.height(12.dp))
-        ManualTimeInputs(
-            uiState,
-            onStartHourChange,
-            onStartMinuteChange,
-            onEndHourChange,
-            onEndMinuteChange
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        TimePickersSection(
-            startHour = startHourInt,
-            startMinute = startMinuteInt,
-            endHour = endHourInt,
-            endMinute = endMinuteInt,
-            onStartHourChange = onStartHourChange,
-            onStartMinuteChange = onStartMinuteChange,
-            onEndHourChange = onEndHourChange,
-            onEndMinuteChange = onEndMinuteChange
-        )
+        if (uiState.useManualTimeInputs) {
+            ManualTimeInputs(
+                uiState,
+                onStartHourChange,
+                onStartMinuteChange,
+                onEndHourChange,
+                onEndMinuteChange
+            )
+        } else {
+            TimePickersSection(
+                startHour = startHourInt,
+                startMinute = startMinuteInt,
+                endHour = endHourInt,
+                endMinute = endMinuteInt,
+                onStartHourChange = onStartHourChange,
+                onStartMinuteChange = onStartMinuteChange,
+                onEndHourChange = onEndHourChange,
+                onEndMinuteChange = onEndMinuteChange
+            )
+        }
         Spacer(modifier = Modifier.height(4.dp))
         DescriptionSection(uiState.description, onDescriptionChange)
         Spacer(modifier = Modifier.height(8.dp))

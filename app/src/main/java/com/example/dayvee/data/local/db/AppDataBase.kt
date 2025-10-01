@@ -14,7 +14,7 @@ import com.example.dayvee.utils.Constants.DB_NAME
 import com.example.dayvee.utils.Converters
 
 object DataBaseVersion {
-    internal const val DATA_BASE_VERSION = 3
+    internal const val DATA_BASE_VERSION = 2
 }
 
 @Database(

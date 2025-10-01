@@ -3,13 +3,12 @@ package com.example.dayvee.ui.screens.task
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,16 +22,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.dayvee.R
+import com.example.dayvee.domain.model.TaskPriority
+import com.example.dayvee.ui.extensions.toColor
+import com.example.dayvee.ui.extensions.toDisplayName
 import com.example.dayvee.ui.theme.DayVeeTheme
 
 @Composable
@@ -59,13 +62,13 @@ fun TaskScreen(
             color = MaterialTheme.colorScheme.error
         )
 
-        else -> TaskContent(uiState, onBackClick = onBackClick)
+        else -> TaskScreenContent(uiState, onBackClick = onBackClick)
 
     }
 }
 
 @Composable
-fun TaskContent(
+private fun TaskScreenContent(
     uiState: TaskUiState,
     onBackClick: () -> Unit,
 ) {
@@ -76,9 +79,14 @@ fun TaskContent(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TaskHeader(uiState.totalDuration, onBackClick)
-        Spacer(modifier = Modifier.height(16.dp))
-        TaskProgress(0.4f)
+        TaskHeader(
+            uiState.totalDuration,
+            uiState.priority.toDisplayName(),
+            uiState.priority.toColor(),
+            onBackClick
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        TaskProgress(uiState.progress)
         Spacer(modifier = Modifier.height(16.dp))
         TaskTitleSection(uiState.date, uiState.title)
         Spacer(modifier = Modifier.height(16.dp))
@@ -89,24 +97,51 @@ fun TaskContent(
 }
 
 @Composable
-private fun TaskHeader(totalDuration: String, onBackClick: () -> Unit) {
+private fun TaskHeader(
+    totalDuration: String,
+    priority: String,
+    priorityColor: Color,
+    onBackClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_arrow_left),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
-            modifier = Modifier
-                .size(24.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onBackClick() }
-        )
+        IconButton(onClick = onBackClick) {
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_left),
+                contentDescription = stringResource(R.string.nav_back),
+                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+            )
+        }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        Row(
+            modifier = Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_info),
+                contentDescription = null,
+                tint = priorityColor,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Text(
+                text = priority,
+                style = MaterialTheme.typography.labelMedium,
+                color = priorityColor
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Row(
             modifier = Modifier
@@ -130,21 +165,36 @@ private fun TaskHeader(totalDuration: String, onBackClick: () -> Unit) {
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary
             )
-
         }
     }
 }
 
 @Composable
 private fun TaskProgress(progress: Float) {
-    LinearProgressIndicator(
-        progress = { progress }, //todo
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(4.dp),
-        color = MaterialTheme.colorScheme.primary,
-        trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f),
-    )
+            .height(4.dp)
+            .background(
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(4.dp)
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(progress)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.tertiary,
+                            MaterialTheme.colorScheme.primary
+                        )
+                    ),
+                    shape = RoundedCornerShape(3.dp)
+                )
+        )
+    }
 }
 
 @Composable
@@ -292,7 +342,7 @@ private fun TimeBox(
             )
             Text(
                 text = timeText,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
         }
@@ -305,12 +355,15 @@ private fun TimeBox(
 @Composable
 private fun TaskContentPreview() {
     DayVeeTheme {
-        TaskContent(
+        TaskScreenContent(
             uiState = TaskUiState(
                 title = "Sample Task Title",
                 description = "This is a detailed description of the task.",
+                totalDuration = "1 час",
                 startTime = "09:00",
                 endTime = "10:00",
+                progress = 0.4f,
+                priority = TaskPriority.MEDIUM,
                 date = "2025-08-13",
             ),
             onBackClick = {}

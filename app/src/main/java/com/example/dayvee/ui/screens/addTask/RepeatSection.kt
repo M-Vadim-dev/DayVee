@@ -66,7 +66,7 @@ fun RepeatSection() {
             )
             Text(
                 text = stringResource(R.string.text_repeat),
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = contentColor,
                 modifier = Modifier
                     .weight(1f)
@@ -153,7 +153,7 @@ private fun RepeatOptionsSection(
         )
         Text(
             text = stringResource(R.string.text_repeat_on),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(start = 4.dp, top = 4.dp),
         )

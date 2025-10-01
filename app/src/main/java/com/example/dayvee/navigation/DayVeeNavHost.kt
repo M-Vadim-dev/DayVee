@@ -10,7 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.dayvee.ui.screens.StatsScreen
+import com.example.dayvee.ui.screens.stats.StatsScreen
 import com.example.dayvee.ui.screens.intro.IntroScreen
 import com.example.dayvee.ui.screens.main.MainScreen
 import com.example.dayvee.ui.screens.settings.SettingsScreen
@@ -63,7 +63,7 @@ fun DayVeeNavHost(navController: NavHostController = rememberNavController()) {
                     animationSpec = tween(durationMillis = 300)
                 )
             }
-        ) { StatsScreen(navController) }
+        ) { StatsScreen(onBack = { navController.popBackStack() }) }
 
         composable(
             route = Screen.Settings.route,

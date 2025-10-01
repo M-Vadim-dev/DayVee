@@ -12,14 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.dayvee.ui.theme.DarkSlateGray
 import com.example.dayvee.ui.theme.MediumOrchid
 import com.example.dayvee.ui.theme.MediumPurple
-import com.example.dayvee.ui.theme.Montserrat
 
 @Composable
 fun CustomGradientButton(
@@ -29,7 +25,7 @@ fun CustomGradientButton(
         colors = listOf(MediumOrchid, MediumPurple)
     ),
     enabled: Boolean = true,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
 
     val buttonGradient: Brush =
@@ -49,11 +45,7 @@ fun CustomGradientButton(
         Text(
             text = text,
             color = textColor,
-            style = TextStyle(
-                fontFamily = Montserrat,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
-            )
+            style = MaterialTheme.typography.bodyLarge,
         )
     }
 }

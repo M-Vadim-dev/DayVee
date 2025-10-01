@@ -7,9 +7,11 @@ interface SettingsRepository {
     val isFirstLaunch: Flow<Boolean>
     val notifications: Flow<Boolean>
     val language: Flow<String>
+    val useManualTimeInputs: Flow<Boolean>
 
     suspend fun setDarkMode(enabled: Boolean)
     suspend fun setNotifications(enabled: Boolean)
     suspend fun setLanguage(lang: String)
     suspend fun setLaunched()
+    suspend fun setUseManualTimeInputs(enabled: Boolean)
 }
