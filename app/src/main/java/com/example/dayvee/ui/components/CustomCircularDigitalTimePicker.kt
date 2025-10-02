@@ -80,7 +80,7 @@ private fun GradientFadingLazyColumn(
 ) {
     val density = LocalDensity.current
     val gradientHeight = 48.dp
-    val backgroundColor = MaterialTheme.colorScheme.background
+    val backgroundColor = MaterialTheme.colorScheme.primaryContainer
 
     Box(
         modifier = modifier
@@ -160,8 +160,8 @@ private fun CircularTimePickerColumn(
         Text(
             text = value.toString().padStart(2, '0'),
             fontSize = if (isSelected) 24.sp else 18.sp,
-            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-            else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            color = if (isSelected) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
             modifier = Modifier
                 .height(itemHeight)
                 .fillMaxWidth()

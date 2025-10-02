@@ -5,7 +5,7 @@ import com.example.dayvee.navigation.Screen
 
 val bottomBarItems = listOf(
     BottomBarItemRes(
-        route = Screen.Stats.route,
+        route = Screen.Main.route,
         labelRes = R.string.nav_home,
         iconOutlinedRes = R.drawable.ic_home,
         iconFilledRes = R.drawable.ic_home_fill
@@ -19,13 +19,13 @@ val bottomBarItems = listOf(
     BottomBarItemRes(
         route = Screen.Stats.route,
         labelRes = R.string.nav_stats,
-        iconOutlinedRes = R.drawable.ic_bar_chart ,
-        iconFilledRes = R.drawable.ic_bar_chart_line
+        iconFilledRes = R.drawable.ic_bar_chart ,
+        iconOutlinedRes = R.drawable.ic_bar_chart_line
     ),
     BottomBarItemRes(
         route = Screen.Settings.route,
         labelRes = R.string.nav_setting,
-        iconOutlinedRes = R.drawable.ic_settings,
-        iconFilledRes = R.drawable.ic_settings_fill
+        iconFilledRes = R.drawable.ic_settings,
+        iconOutlinedRes = R.drawable.ic_settings_fill
     )
 )

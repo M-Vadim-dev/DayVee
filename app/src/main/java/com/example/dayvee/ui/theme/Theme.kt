@@ -11,36 +11,55 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MediumPurple,
-    onPrimary = GhostWhite,
-    primaryContainer = DarkSlateGray,
-    onPrimaryContainer = GhostWhite,
+    primary = MediumPurple,           // основной акцентный цвет (кнопки, выделения)
+    onPrimary = GhostWhite,           // текст/иконки на primary
 
-    secondary = DarkSlateGray,
-    onSecondary = Gray,
+    primaryContainer = DarkSlateGray, // фон для контейнеров (карточки, кнопки)
+    onPrimaryContainer = GhostWhite,  // текст/иконки на primaryContainer
+
+    secondary = DarkSlateGrayDarker,  // второстепенные элементы (иконки, кнопки)
+    onSecondary = SlateGray,               // текст/иконки на secondary
+
+    tertiary = MediumOrchid,          // дополнительный акцентный цвет
+    onTertiary = GhostWhite,          // текст/иконки на tertiary
+
+    background = MidnightBlue,        // общий фон приложения
+    onBackground = GhostWhite,        // текст/иконки на фоне
+
+    surface = DarkSlateGray,           // фон поверхностей (card, bottom sheet)
+    onSurface = GhostWhite,
+
+    surfaceVariant = GhostWhite,   // альтернативный фон для разделения блоков
+    onSurfaceVariant = Gray,     // текст/иконки на surfaceVariant
+
+    outline = Gray,              // цвет для бордеров, разделителей
+
+    error = CriticalRed,              // ошибки, предупреждения
+)
+
+private val LightColorScheme = lightColorScheme(
+    primary = MediumPurple,
+    onPrimary = MidnightBlue,
+
+    primaryContainer = GhostWhite,
+    onPrimaryContainer = MidnightBlue,
+
+    secondary = Lavender,
+    onSecondary = SlateGray,
 
     tertiary = MediumOrchid,
     onTertiary = GhostWhite,
 
-    background = MidnightBlue,
-    onBackground = GhostWhite,
+    background = MintCream,
+    onBackground = MidnightBlue,
 
-    surface = MidnightBlue,
-    surfaceVariant = DarkSlateGray,
-    onSurface = GhostWhite,
+    surface = GhostWhite,
+    onSurface = MidnightBlue,
+
+    surfaceVariant = GhostWhite,
     onSurfaceVariant = SlateGray,
 
-    outline = SlateGray,
-
-    error = CriticalRed,
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = SlateGray50,
-    tertiary = Pink40,
-
-)
+    )
 
 @Composable
 fun DayVeeTheme(

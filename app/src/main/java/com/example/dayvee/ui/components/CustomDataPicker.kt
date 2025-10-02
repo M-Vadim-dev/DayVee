@@ -1,17 +1,15 @@
 package com.example.dayvee.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -44,12 +41,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dayvee.R
 import com.example.dayvee.ui.animations.rememberItemSelectedScale
 import com.example.dayvee.ui.theme.DayVeeTheme
+import com.example.dayvee.ui.theme.GhostWhite
 import com.example.dayvee.ui.theme.Gradients.verticalPurpleGradient
 import com.example.dayvee.utils.DateUtils
 import java.time.LocalDate
@@ -62,8 +61,6 @@ fun CustomDatePicker(
     selectedDate: LocalDate,
     currentMonth: YearMonth,
     isDatePickerVisible: Boolean,
-    hasTasks: Boolean,
-    isTasksDone: Boolean,
     isToday: Boolean,
     onDateSelected: (LocalDate) -> Unit,
     onMonthChange: (YearMonth) -> Unit,
@@ -113,9 +110,9 @@ fun CustomDatePicker(
     Column(modifier = modifier.padding(bottom = 10.dp)) {
         Text(
             text = stringResource(R.string.today),
-            style = MaterialTheme.typography.titleMedium,
-            color = if (isToday) MaterialTheme.colorScheme.onSecondary
-            else MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f),
+            style = MaterialTheme.typography.titleSmall,
+            color = if (isToday) MaterialTheme.colorScheme.onSurfaceVariant
+            else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             fontSize = 18.sp,
             modifier = Modifier
                 .padding(start = 18.dp)
@@ -150,10 +147,10 @@ fun CustomDatePicker(
             Spacer(modifier = Modifier.width(6.dp))
             Text(
                 text = formattedDate,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
 
@@ -171,6 +168,7 @@ fun CustomDatePicker(
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .graphicsLayer {
                             scaleX = scale
@@ -193,50 +191,54 @@ fun CustomDatePicker(
                         .clickable { onDateSelected(date) }
                         .width(42.dp)
                         .height(55.dp)
-                        .padding(8.dp)) {
+                ) {
                     Text(
                         text = date.dayOfWeek.getDisplayName(
                             TextStyle.SHORT, Locale.getDefault()
                         ),
+                        textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                        else MaterialTheme.colorScheme.onSecondary
+                        color = if (isSelected) GhostWhite
+                        else MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
+                    if (!isSelected) Spacer(modifier = Modifier.padding(2.dp))
+
                     Text(
                         text = date.dayOfMonth.toString(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp,
+                        color = if (isSelected) GhostWhite
+                        else MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold
                     )
 
-                    if (hasTasks && isSelected) {
+                    if (isToday && isSelected) {
                         HorizontalDivider(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = GhostWhite,
                             thickness = 2.dp,
-                            modifier = Modifier.padding(3.dp)
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 3.dp)
                         )
+//                        Box(
+//                            modifier = Modifier
+//                                .padding(8.dp)
+//                                .size(6.dp)
+//                                .aspectRatio(1f)
+//                                .background(
+//                                    color = MaterialTheme.colorScheme.primary,
+//                                    shape = CircleShape
+//                                )
+//                        )
                     }
-
-                    if (hasTasks && !isSelected && !isTasksDone) {
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .aspectRatio(1f)
-                                .border(
-                                    width = 1.dp,
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    shape = CircleShape
-                                )
-                        )
-                    }
-
                 }
             }
         }
     }
 }
 
-@Preview()
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomDatePickerPreview() {
     val today = LocalDate.now()
@@ -250,8 +252,6 @@ fun CustomDatePickerPreview() {
             selectedDate = selectedDate,
             currentMonth = currentMonth,
             isDatePickerVisible = isVisible,
-            hasTasks = true,
-            isTasksDone = false,
             isToday = true,
             onDateSelected = { selectedDate = it },
             onMonthChange = {},

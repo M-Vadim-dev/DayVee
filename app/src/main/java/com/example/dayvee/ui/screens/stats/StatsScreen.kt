@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -71,45 +73,52 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
     viewModel: StatsViewModel = hiltViewModel(),
-    onBack: (() -> Unit)? = null,
+    onBack: () -> Unit,
 ) {
     val stats by viewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.nav_stats),
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                },
-                navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_left),
-                                contentDescription = stringResource(R.string.nav_back),
-                                tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                            )
-                        }
-                    }
-                }
-            )
-        }
+        topBar = { StatsScreenTopBar(onBack) }
     ) { innerPadding ->
         StatsScreenContent(
             stats = stats,
             modifier = Modifier.padding(innerPadding)
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StatsScreenTopBar(onBackClick: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = R.string.nav_stats),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleMedium,
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_left),
+                    contentDescription = stringResource(R.string.nav_back),
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        )
+    )
 }
 
 @Composable
@@ -121,7 +130,7 @@ private fun StatsScreenContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         MultiRingProgress(
             text = "${stringResource(R.string.total)}\n${stringResource(R.string.task)}",
@@ -135,42 +144,58 @@ private fun StatsScreenContent(
         Spacer(modifier = Modifier.height(32.dp))
         StatusLegend()
 
-        Spacer(modifier = Modifier.height(32.dp))
-        Card(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(R.string.task_progress),
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                StatusProgressRow(stats = stats)
-            }
-        }
+        Spacer(modifier = Modifier.height(24.dp))
+        TaskProgressCard(stats = stats)
 
-        Spacer(modifier = Modifier.height(20.dp))
-        Card(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
+        Spacer(modifier = Modifier.height(16.dp))
+        PriorityCard(stats = stats)
+    }
+}
+
+@Composable
+private fun TaskProgressCard(stats: TaskStats) {
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(R.string.tasks_by_priority),
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TagsList(stats.byPriority)
-            }
+            Text(
+                text = stringResource(R.string.task_progress),
+                style = MaterialTheme.typography.titleSmall
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            StatusProgressRow(stats = stats)
+        }
+    }
+}
+
+@Composable
+private fun PriorityCard(stats: TaskStats) {
+    Card(
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 24.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.tasks_by_priority),
+                style = MaterialTheme.typography.titleSmall
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TagsList(stats.byPriority)
         }
     }
 }
@@ -199,9 +224,14 @@ private fun MultiRingProgress(
     val completedColors = listOf(CornflowerBlue, LightSkyBlue)
     val inProgressColors = listOf(SandyBrown, CriticalRed)
     val pendingColors = listOf(MediumOrchid, MediumPurple)
-    val bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+    val bgColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+    val textColor = MaterialTheme.colorScheme.onBackground
 
-    Box(modifier = modifier.size(size)) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .padding(top = 8.dp)
+    ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val radius = size.toPx() / 2
             val center = Offset(radius, radius)
@@ -276,7 +306,7 @@ private fun MultiRingProgress(
                             Paint().apply {
                                 textAlign = Paint.Align.CENTER
                                 textSize = strokeWidth * 0.7f
-                                color = android.graphics.Color.WHITE
+                                color = textColor.toArgb()
                                 isAntiAlias = true
                             }
                         )
@@ -314,7 +344,7 @@ private fun MultiRingProgress(
                     Paint().apply {
                         textAlign = Paint.Align.CENTER
                         textSize = radius / 3
-                        color = android.graphics.Color.WHITE
+                        color = textColor.toArgb()
                         isFakeBoldText = true
                         isAntiAlias = true
                     }
@@ -328,7 +358,7 @@ private fun MultiRingProgress(
             text = text,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = (size.value * 0.05).dp, bottom = (size.value * 0.03).dp),
+                .padding(end = (size.value * 0.03).dp, bottom = (size.value * 0.01).dp),
             color = MaterialTheme.colorScheme.onBackground,
             fontSize = (legendFontSize.value * 1.2).sp,
             style = MaterialTheme.typography.titleLarge,
@@ -367,7 +397,7 @@ private fun LegendRow(label: String, color: Color) {
         Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = label, style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
         )
     }
 }
@@ -445,7 +475,7 @@ private fun TagsList(byTag: Map<TaskPriority, Int>) {
         Text(
             text = stringResource(R.string.no_tasks),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSurface
         )
         return
     }
@@ -465,13 +495,25 @@ private fun TagsList(byTag: Map<TaskPriority, Int>) {
                 Text(
                     text = count.toString(),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
     }
 }
 
+@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun StatsScreenTopBarPreview() {
+    DayVeeTheme {
+        StatsScreenTopBar(
+            onBackClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun StatsScreenPreview() {

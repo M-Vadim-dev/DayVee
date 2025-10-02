@@ -1,5 +1,6 @@
 package com.example.dayvee.ui.components
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +44,6 @@ import com.example.dayvee.ui.theme.DayVeeTheme
 import com.example.dayvee.ui.theme.GhostWhite
 import com.example.dayvee.ui.theme.MediumOrchid
 import com.example.dayvee.ui.theme.MediumPurple
-import com.example.dayvee.ui.theme.MidnightBlue
 import com.example.dayvee.ui.theme.Montserrat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -116,7 +116,7 @@ private fun Header(
 
 
 @Composable
-fun CustomCalendar(
+private fun CustomCalendar(
     selectedDate: LocalDate,
     currentMonth: YearMonth,
     onDateChange: (LocalDate) -> Unit,
@@ -293,21 +293,20 @@ private fun CalendarGrid(
     }
 }
 
-@Preview()
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun CustomDatePickerDialogPreview() {
-    DayVeeTheme {
-        Surface(color = MidnightBlue) {
-            var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-            var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
+private fun CustomDatePickerDialogPreview() {
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var currentMonth by remember { mutableStateOf(YearMonth.from(selectedDate)) }
 
-            CustomDatePickerDialog(
-                selectedDate = selectedDate,
-                currentMonth = currentMonth,
-                onDateSelected = { selectedDate = it },
-                onMonthChange = { currentMonth = it },
-                onDismiss = {}
-            )
-        }
+    DayVeeTheme {
+        CustomDatePickerDialog(
+            selectedDate = selectedDate,
+            currentMonth = currentMonth,
+            onDateSelected = { selectedDate = it },
+            onMonthChange = { currentMonth = it },
+            onDismiss = {}
+        )
     }
 }

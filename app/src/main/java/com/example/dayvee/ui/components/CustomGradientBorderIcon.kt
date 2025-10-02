@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,8 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.dayvee.ui.theme.GhostWhite
+import com.example.dayvee.ui.theme.Gradients.verticalDarkPurpleGradient
+import com.example.dayvee.ui.theme.Gradients.verticalPurpleGradient
 
 @Composable
 fun CustomGradientBorderIcon(
@@ -29,7 +35,7 @@ fun CustomGradientBorderIcon(
     ),
     iconSize: Dp = 32.dp,
     icon: ImageVector,
-    iconTint: Color = Color.White,
+    iconTint: Color = GhostWhite,
     contentDescription: String? = null,
     rotation: Float = 0f,
     onClick: () -> Unit = {},
@@ -69,4 +75,15 @@ fun CustomGradientBorderIcon(
             tint = iconTint
         )
     }
+}
+
+@Preview
+@Composable
+private fun CustomGradientBorderIconPreview() {
+    CustomGradientBorderIcon(
+        gradientCircle = verticalPurpleGradient,
+        gradientBorder = verticalDarkPurpleGradient,
+        icon = Icons.Rounded.Add,
+        onClick = {}
+    )
 }

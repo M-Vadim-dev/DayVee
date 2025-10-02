@@ -12,16 +12,24 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.dayvee.domain.repository.SettingsRepository
 import com.example.dayvee.navigation.DayVeeNavHost
 import com.example.dayvee.ui.theme.DayVeeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -31,7 +39,9 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(TRANSPARENT),
         )
         setContent {
-            val isDarkTheme = true
+            val isDarkTheme by settingsRepository.darkMode.collectAsStateWithLifecycle(true)
+            val isFirstLaunch by settingsRepository.isFirstLaunch.collectAsStateWithLifecycle(false)
+
             DayVeeTheme(darkTheme = isDarkTheme) {
                 val insetsController = WindowInsetsControllerCompat(window, window.decorView)
                 insetsController.isAppearanceLightStatusBars = !isDarkTheme
@@ -41,7 +51,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DayVeeNavHost()
+                    DayVeeNavHost(isFirstLaunch = isFirstLaunch)
                 }
             }
         }

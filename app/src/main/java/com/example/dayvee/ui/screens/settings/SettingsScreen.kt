@@ -62,8 +62,8 @@ import com.example.dayvee.ui.theme.SandyBrown
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBackClick: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
+    onBack: () -> Unit,
 ) {
     val darkMode by viewModel.darkMode.collectAsState()
     val notifications by viewModel.notifications.collectAsState(initial = true)
@@ -75,7 +75,7 @@ fun SettingsScreen(
         notifications = notifications,
         manualTimeInputs = manualTimeInputs,
         currentLanguage = language,
-        onBackClick = onBackClick,
+        onBackClick = onBack,
         onToggleDarkMode = { viewModel.toggleDarkMode(it) },
         onToggleNotifications = { viewModel.toggleNotifications(it) },
         onToggleUseManualTimeInputs = { viewModel.toggleUseManualTimeInputs(it) },
@@ -97,8 +97,7 @@ private fun SettingsScreenContent(
     onLanguageSelected: (String) -> Unit,
 ) {
     Scaffold(
-        topBar = { SettingsTopAppBar(onBackClick = onBackClick) },
-        containerColor = Color.Transparent
+        topBar = { SettingsTopAppBar(onBackClick = onBackClick) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -111,14 +110,15 @@ private fun SettingsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 SettingsNavigationRow(
                     label = "Пользовательский аккаунт",
                     icon = painterResource(R.drawable.ic_account_circle),
                     description = "Управление профилем и данными",
+                    iconColor = MaterialTheme.colorScheme.onPrimary,
                     onClick = { }
                 )
                 CustomHorizontalDivider()
@@ -141,8 +141,8 @@ private fun SettingsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Column {
@@ -171,7 +171,6 @@ private fun SettingsScreenContent(
                         label = "Первый день недели",
                         icon = painterResource(R.drawable.ic_assignment),
                         description = "Задайте начало календаря",
-                        checked = false,
                         onCheckedChange = {}
                     )
                     CustomHorizontalDivider()
@@ -179,7 +178,6 @@ private fun SettingsScreenContent(
                         label = "Формат времени",
                         icon = painterResource(R.drawable.ic_schedule),
                         description = "12- или 24-часовой формат отображения",
-                        checked = false,
                         onCheckedChange = {}
                     )
                     CustomHorizontalDivider()
@@ -187,7 +185,6 @@ private fun SettingsScreenContent(
                         label = "Звук завершеня задачи",
                         icon = painterResource(R.drawable.ic_sound),
                         description = "Включить звуковое уведомление при завершении",
-                        checked = false,
                         onCheckedChange = {}
                     )
                     CustomHorizontalDivider()
@@ -203,7 +200,7 @@ private fun SettingsScreenContent(
                         label = "Виджеты",
                         icon = painterResource(R.drawable.ic_dataset_fill),
                         description = "Настроить отображение виджетов на главном экране",
-                        onClick = { }
+                        onClick = {}
                     )
                 }
             }
@@ -218,8 +215,8 @@ private fun SettingsScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 SettingsNavigationRow(
@@ -255,10 +252,10 @@ private fun SettingsScreenContent(
                     label = "О приложении",
                     icon = painterResource(R.drawable.ic_info_circle),
                     description = "Версия, лицензия и информация о разработчике",
+                    iconColor = MaterialTheme.colorScheme.onPrimary,
                     onClick = { }
                 )
             }
-
         }
     }
 }
@@ -269,7 +266,7 @@ private fun SettingsRow(
     icon: Painter,
     iconColor: Color = MaterialTheme.colorScheme.primary,
     description: String,
-    checked: Boolean,
+    checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(
@@ -280,19 +277,20 @@ private fun SettingsRow(
     ) {
         Icon(
             painter = icon,
-            contentDescription = null,
-            tint = iconColor
+            contentDescription = label,
+            tint = iconColor,
+            modifier = Modifier.size(28.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             modifier = Modifier
                 .weight(1f)
-                .padding(end = 4.dp)
+                .padding(end = 8.dp)
         ) {
             Text(
                 text = label,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1
             )
@@ -306,8 +304,11 @@ private fun SettingsRow(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onSurface,
-                checkedTrackColor = MaterialTheme.colorScheme.primary
+                checkedThumbColor = MaterialTheme.colorScheme.surfaceVariant,
+                uncheckedThumbColor = MaterialTheme.colorScheme.surfaceVariant,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                uncheckedTrackColor = MaterialTheme.colorScheme.secondary,
+                uncheckedBorderColor = Color.Transparent,
             )
         )
     }
@@ -331,7 +332,8 @@ private fun SettingsNavigationRow(
         Icon(
             painter = icon,
             contentDescription = null,
-            tint = iconColor
+            tint = iconColor,
+            modifier = Modifier.size(28.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(
@@ -382,7 +384,8 @@ private fun LanguageRow(
         Icon(
             painter = painterResource(R.drawable.ic_language),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(28.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
@@ -451,45 +454,43 @@ private fun LanguageRow(
             }
         }
 
-
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsTopAppBar(
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun SettingsTopAppBar(onBackClick: () -> Unit) {
     TopAppBar(
         title = {
             Text(
                 text = stringResource(id = R.string.nav_setting),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
             )
-
         },
         navigationIcon = {
+
             IconButton(onClick = onBackClick) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_left),
                     contentDescription = stringResource(R.string.nav_back),
-                    tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    modifier = Modifier.size(32.dp)
                 )
             }
+
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        modifier = modifier
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        )
     )
 }
 
+@Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SettingsScreenContentPreview() {

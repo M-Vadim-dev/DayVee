@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dayvee.ui.theme.DarkSlateGray
 import com.example.dayvee.ui.theme.MediumOrchid
@@ -21,9 +23,7 @@ import com.example.dayvee.ui.theme.MediumPurple
 fun CustomGradientButton(
     modifier: Modifier = Modifier,
     text: String,
-    gradient: Brush = Brush.horizontalGradient(
-        colors = listOf(MediumOrchid, MediumPurple)
-    ),
+    gradient: Brush = Brush.horizontalGradient(colors = listOf(MediumOrchid, MediumPurple)),
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -40,7 +40,7 @@ fun CustomGradientButton(
             .clip(RoundedCornerShape(50.dp))
             .background(brush = buttonGradient)
             .clickable(enabled = enabled, onClick = onClick),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
@@ -48,4 +48,18 @@ fun CustomGradientButton(
             style = MaterialTheme.typography.bodyLarge,
         )
     }
+}
+
+@Preview
+@Composable
+private fun CustomGradientButtonPreview() {
+    CustomGradientButton(
+        text = "Text",
+        modifier = Modifier
+            .height(30.dp)
+            .width(120.dp),
+        enabled = true,
+        onClick = {},
+
+        )
 }

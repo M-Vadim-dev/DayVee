@@ -32,7 +32,7 @@ fun CustomHorizontalDivider(
                         colors = listOf(
                             topColor.copy(alpha = 0f),
                             topColor,
-                            topColor.copy(alpha = 0f)
+                            topColor.copy(alpha = 0.1f)
                         )
                     )
                 )
@@ -46,7 +46,7 @@ fun CustomHorizontalDivider(
                         colors = listOf(
                             bottomColor.copy(alpha = 0f),
                             bottomColor,
-                            bottomColor.copy(alpha = 0f)
+                            bottomColor.copy(alpha = 0.2f)
                         )
                     )
                 )

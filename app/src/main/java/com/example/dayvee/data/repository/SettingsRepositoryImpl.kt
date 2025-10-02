@@ -12,8 +12,9 @@ import kotlinx.coroutines.flow.map
 class SettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>,
 ) : SettingsRepository {
+
     override val darkMode: Flow<Boolean> = dataStore.data.map { prefs ->
-        prefs[DARK_MODE] ?: false
+        prefs[DARK_MODE] ?: true
     }
 
     override val notifications: Flow<Boolean> =

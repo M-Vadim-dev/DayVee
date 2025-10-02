@@ -59,6 +59,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -68,7 +69,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -88,10 +88,9 @@ import com.example.dayvee.ui.extensions.toColor
 import com.example.dayvee.ui.screens.addTask.AddTaskScreen
 import com.example.dayvee.ui.screens.addTask.AddTaskScreenViewModel
 import com.example.dayvee.ui.theme.Gradients.verticalBlackOverlayGradient
-import com.example.dayvee.ui.theme.Gradients.verticalDarkPurpleGradient
 import com.example.dayvee.ui.theme.Gradients.verticalMidnightBlueGradient
 import com.example.dayvee.ui.theme.Gradients.verticalPurpleGradient
-import com.example.dayvee.ui.theme.Montserrat
+import com.example.dayvee.ui.theme.MediumPurple
 import com.example.dayvee.utils.DateUtils.formatTime
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -180,7 +179,7 @@ fun MainScreen(
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.outline
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             },
@@ -190,7 +189,9 @@ fun MainScreen(
     }, floatingActionButton = {
         CustomGradientBorderIcon(
             gradientCircle = verticalPurpleGradient,
-            gradientBorder = verticalDarkPurpleGradient,
+            gradientBorder = Brush.verticalGradient(
+                colors = listOf(MediumPurple, MaterialTheme.colorScheme.surface)
+            ),
             icon = Icons.Rounded.Add,
             contentDescription = null,
             iconSize = 36.dp,
@@ -235,8 +236,6 @@ fun MainScreen(
                 currentMonth = uiState.currentMonth,
                 isDatePickerVisible = uiState.isDatePickerVisible,
                 isToday = uiState.isToday,
-                isTasksDone = uiState.tasks.any { it.date != uiState.selectedDate && !it.isDone }, //todo
-                hasTasks = uiState.tasks.any { it.date == uiState.selectedDate },
                 onDateSelected = mainScreenViewModel::setSelectedDate,
                 onMonthChange = mainScreenViewModel::setCurrentMonth,
                 onShowPicker = { mainScreenViewModel.setDatePickerVisibility(true) },
@@ -301,13 +300,13 @@ private fun MainTopBarTitle(
                 Image(
                     painter = painterResource(id = R.drawable.avatar),
                     contentDescription = null,
-                    modifier = Modifier.size(36.dp)
+                    modifier = Modifier.size(32.dp)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = text, style = TextStyle(
-                        fontFamily = Montserrat, fontWeight = FontWeight.Medium, fontSize = 16.sp
-                    ), color = MaterialTheme.colorScheme.onSecondary
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
