@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -43,8 +42,8 @@ fun TimePickersSection(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(16.dp)
+                color = MaterialTheme.colorScheme.secondary,
+                shape = MaterialTheme.shapes.medium
             )
             .padding(vertical = 16.dp, horizontal = 24.dp)
     ) {
@@ -62,7 +61,7 @@ fun TimePickersSection(
                 onHourChange = onStartHourChange,
                 onMinuteChange = onStartMinuteChange
             )
-            Spacer(modifier = Modifier.width(70.dp))
+            Spacer(modifier = Modifier.width(68.dp))
             TimePickerColumn(
                 iconRes = R.drawable.ic_pace,
                 labelRes = R.string.text_end_time_task,
@@ -95,7 +94,7 @@ private fun TimePickerColumn(
             Text(
                 text = stringResource(labelRes),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.4f),
+                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

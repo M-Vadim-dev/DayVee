@@ -226,7 +226,7 @@ private fun TaskTitleSection(date: String, title: String) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(16.dp)
                 .wrapContentHeight()
@@ -288,7 +288,7 @@ private fun TaskDescriptionSection(description: String) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(16.dp)
                 .wrapContentHeight()

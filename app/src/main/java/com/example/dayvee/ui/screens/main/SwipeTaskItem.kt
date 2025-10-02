@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Delete
@@ -48,7 +47,6 @@ import com.example.dayvee.R
 import com.example.dayvee.domain.model.TaskIcon
 import com.example.dayvee.ui.theme.CriticalRed
 import com.example.dayvee.ui.theme.DayVeeTheme
-import com.example.dayvee.ui.theme.MidnightBlue
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -89,7 +87,7 @@ fun SwipeTaskItem(
         Row(
             modifier = Modifier
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(MaterialTheme.shapes.medium)
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
@@ -170,7 +168,7 @@ fun SwipeTaskItem(
             modifier = Modifier
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.surface)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
@@ -218,7 +216,7 @@ fun SwipeTaskItem(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .background(MidnightBlue.copy(alpha = 0.6f))
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
                 )
             }
         }

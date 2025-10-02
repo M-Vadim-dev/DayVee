@@ -1,4 +1,4 @@
-package com.example.dayvee.data.local.converter
+package com.example.dayvee.data.local.db.converter
 
 import androidx.room.TypeConverter
 import com.example.dayvee.domain.model.TaskIcon

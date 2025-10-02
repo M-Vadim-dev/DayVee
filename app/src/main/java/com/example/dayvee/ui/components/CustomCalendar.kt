@@ -62,7 +62,7 @@ fun CustomDatePickerDialog(
 ) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
-            shape = RoundedCornerShape(16.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.background
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

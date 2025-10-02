@@ -49,7 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dayvee.R
 import com.example.dayvee.domain.model.TaskIcon
-import com.example.dayvee.domain.model.TaskIcons.defaultIcons
+import com.example.dayvee.ui.common.TaskIcons.defaultIcons
 import com.example.dayvee.domain.model.TaskPriority
 import com.example.dayvee.ui.extensions.toColor
 import com.example.dayvee.ui.theme.DayVeeTheme
@@ -95,6 +95,7 @@ fun TaskCustomizationSection(
             Text(
                 text = stringResource(R.string.text_color),
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(8.dp)
             )
 
@@ -120,9 +121,11 @@ fun TaskCustomizationSection(
                                 tint = selectedPriority.toColor()
                             )
                         }
+
                         is TaskIcon.Custom -> {
                             // AsyncImage(model = icon.url, contentDescription = null) //todo
                         }
+
                         is TaskIcon.Default -> {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_assignment),
@@ -137,11 +140,12 @@ fun TaskCustomizationSection(
             Text(
                 text = stringResource(R.string.text_icon),
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(8.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         AnimatedVisibility(
             visible = showPriorityPicker,
@@ -190,7 +194,7 @@ private fun IconPicker(
                 ambientColor = Color.Black.copy(alpha = 0.2f),
                 spotColor = Color.Black.copy(alpha = 0.2f)
             )
-            .background(MaterialTheme.colorScheme.secondary.copy(0.5f))
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -198,7 +202,9 @@ private fun IconPicker(
             columns = GridCells.Adaptive(minSize = 30.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.heightIn(max = 100.dp)
+            modifier = Modifier
+                .heightIn(max = 100.dp)
+                .background(MaterialTheme.colorScheme.secondary)
         ) {
             items(defaultIcons.size) { index ->
                 val icon = defaultIcons[index]
@@ -207,7 +213,7 @@ private fun IconPicker(
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(12.dp))
                         .background(
-                            if (icon == selectedIcon) MaterialTheme.colorScheme.secondary
+                            if (icon == selectedIcon) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
                             else Color.Transparent
                         )
                         .clickable { onIconSelected(icon) },
@@ -241,7 +247,7 @@ private fun PriorityColorPicker(
                 ambientColor = Color.Black.copy(alpha = 0.2f),
                 spotColor = Color.Black.copy(alpha = 0.2f)
             )
-            .background(MaterialTheme.colorScheme.secondary.copy(0.5f))
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         TaskPriority.entries.forEach { priority ->
@@ -289,6 +295,7 @@ private fun PriorityColorPicker(
     }
 }
 
+@Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun TaskCustomizationSectionPreview() {
@@ -305,6 +312,7 @@ private fun TaskCustomizationSectionPreview() {
     }
 }
 
+@Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun PriorityColorPickerPreview() {
@@ -316,6 +324,7 @@ private fun PriorityColorPickerPreview() {
     }
 }
 
+@Preview()
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun IconPickerPreview() {

@@ -163,9 +163,8 @@ private fun AddTaskScreenContent(
         }
         Spacer(modifier = Modifier.height(4.dp))
         DescriptionSection(uiState.description, onDescriptionChange)
-        Spacer(modifier = Modifier.height(8.dp))
         RepeatSection()
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         AddButtonSection(uiState.isAddEnabled, uiState.isEditMode, onAddTaskClick)
     }
 }
@@ -375,13 +374,14 @@ private fun AddButtonSection(
         text = if (isEditMode) stringResource(R.string.edit_task) else stringResource(R.string.add_task)
     )
 }
-
+@Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun TitleSectionPreview() {
     TitleSection(title = "Workout") {}
 }
 
+@Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun ManualTimeInputsPreview() {

@@ -126,7 +126,7 @@ fun CustomDatePicker(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(start = 20.dp, top = 6.dp)
+                .padding(start = 20.dp, top = 8.dp)
                 .graphicsLayer {
                     scaleX = scale
                     scaleY = scale
@@ -149,7 +149,7 @@ fun CustomDatePicker(
                 text = formattedDate,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }

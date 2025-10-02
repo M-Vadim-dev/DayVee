@@ -80,7 +80,7 @@ private fun GradientFadingLazyColumn(
 ) {
     val density = LocalDensity.current
     val gradientHeight = 48.dp
-    val backgroundColor = MaterialTheme.colorScheme.primaryContainer
+    val backgroundColor = MaterialTheme.colorScheme.secondary
 
     Box(
         modifier = modifier
@@ -184,6 +184,7 @@ private fun getCenteredIndex(state: LazyListState): Int? {
     }?.index
 }
 
+@Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CustomCircularDigitalTimePickerPreview() {

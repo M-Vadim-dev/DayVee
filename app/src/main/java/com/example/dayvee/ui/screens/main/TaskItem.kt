@@ -59,9 +59,9 @@ fun TaskItem(
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(16.dp)
+                shape = MaterialTheme.shapes.medium
             )
-            .clip(shape = RoundedCornerShape(16.dp)),
+            .clip(shape = MaterialTheme.shapes.medium),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(

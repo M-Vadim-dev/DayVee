@@ -1,7 +1,9 @@
 package com.example.dayvee.domain.model
 
+import androidx.annotation.DrawableRes
+
 sealed class TaskIcon {
-    data class Resource(val resId: Int) : TaskIcon()
+    data class Resource(@param:DrawableRes val resId: Int) : TaskIcon()
     data class Custom(val uri: String) : TaskIcon()
     object Default : TaskIcon()
 

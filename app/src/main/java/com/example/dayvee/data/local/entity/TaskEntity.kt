@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.dayvee.data.local.converter.TaskIconConverter
+import com.example.dayvee.data.local.db.converter.TaskIconConverter
 import com.example.dayvee.domain.model.TaskIcon
 import com.example.dayvee.domain.model.TaskPriority
 import java.time.LocalDate
