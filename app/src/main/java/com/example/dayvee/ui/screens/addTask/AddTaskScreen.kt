@@ -18,10 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,16 +31,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.dayvee.R
 import com.example.dayvee.domain.TaskValidationError
 import com.example.dayvee.domain.model.TaskIcon
@@ -176,12 +174,12 @@ private fun TitleSection(title: String, onTitleChange: (String) -> Unit) {
         onValueChange = onTitleChange,
         shape = RoundedCornerShape(12.dp),
         label = { Text(text = stringResource(id = R.string.text_title_task)) },
-        leadingIcon = { Icon(Icons.Filled.Edit, contentDescription = null) },
+        leadingIcon = { Icon(painterResource(R.drawable.ic_edit), contentDescription = null) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         trailingIcon = {
             if (title.isNotEmpty()) {
                 IconButton(onClick = { onTitleChange("") }) {
-                    Icon(Icons.Filled.Clear, contentDescription = null)
+                    Icon(painterResource(R.drawable.ic_close), contentDescription = null)
                 }
             }
         },
@@ -232,7 +230,7 @@ private fun ManualTimeInputs(
                     fontSize = 10.sp
                 )
                 else Icon(
-                    Icons.Default.Warning,
+                    ImageVector.vectorResource(R.drawable.ic_warning),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -253,7 +251,7 @@ private fun ManualTimeInputs(
                     fontSize = 10.sp
                 )
                 else Icon(
-                    Icons.Default.Warning,
+                    ImageVector.vectorResource(R.drawable.ic_arrow_right),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.error
                 )
@@ -339,7 +337,7 @@ private fun VoiceInputTextField(
                 if (value.isNotEmpty()) {
                     IconButton(onClick = { onValueChange("") }) {
                         Icon(
-                            Icons.Filled.Clear,
+                            ImageVector.vectorResource(R.drawable.ic_close),
                             contentDescription = null
                         )
                     }
@@ -374,6 +372,7 @@ private fun AddButtonSection(
         text = if (isEditMode) stringResource(R.string.edit_task) else stringResource(R.string.add_task)
     )
 }
+
 @Preview(showBackground = true)
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable

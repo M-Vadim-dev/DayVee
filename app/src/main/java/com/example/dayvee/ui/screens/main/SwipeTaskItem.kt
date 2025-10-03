@@ -17,10 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,11 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -115,7 +113,7 @@ fun SwipeTaskItem(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Edit,
+                            imageVector = ImageVector.vectorResource(R.drawable.icon_edit),
                             contentDescription = stringResource(R.string.edit),
                             tint = MaterialTheme.colorScheme.onPrimary,
                         )
@@ -148,7 +146,7 @@ fun SwipeTaskItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_trash),
                         contentDescription = stringResource(R.string.delete),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
@@ -203,7 +201,7 @@ fun SwipeTaskItem(
                     is TaskIcon.Default -> painterResource(id = R.drawable.ic_assignment)
                     null -> null
                 },
-                imageVector = if (icon == null) Icons.Filled.AccountBox else null,
+                imageVector = if (icon == null) ImageVector.vectorResource(R.drawable.ic_account_circle) else null,
                 colorLabel = priorityColor,
                 isCompleted = isComplete,
                 progress = progress,

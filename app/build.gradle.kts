@@ -68,6 +68,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.appcompat)
+    implementation(libs.introshowcaseview)
 
     // dataStore
     implementation(libs.androidx.datastore.preferences)

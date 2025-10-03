@@ -29,10 +29,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,19 +58,21 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.dayvee.R
@@ -177,7 +175,7 @@ fun MainScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Menu,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -192,13 +190,13 @@ fun MainScreen(
             gradientBorder = Brush.verticalGradient(
                 colors = listOf(MediumPurple, MaterialTheme.colorScheme.surface)
             ),
-            icon = Icons.Rounded.Add,
+            icon = ImageVector.vectorResource(R.drawable.ic_add),
             contentDescription = null,
             iconSize = 36.dp,
             modifier = Modifier
                 .offset(y = 44.dp)
                 .onGloballyPositioned { coordinates ->
-                    val position = coordinates.positionInParent()
+                    val position = coordinates.positionInRoot()
                     val size = coordinates.size
                     fabCenterX.floatValue = position.x + size.width / 2f
                 },
@@ -324,7 +322,7 @@ private fun MainTopBarTitle(
                 .size(30.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Notifications,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_notifications),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(24.dp)

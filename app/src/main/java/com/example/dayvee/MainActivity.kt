@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val isDarkTheme by settingsRepository.darkMode.collectAsStateWithLifecycle(true)
             val isFirstLaunch by settingsRepository.isFirstLaunch.collectAsStateWithLifecycle(false)
-
+//            ShowcaseSample()
             DayVeeTheme(darkTheme = isDarkTheme) {
                 val insetsController = WindowInsetsControllerCompat(window, window.decorView)
                 insetsController.isAppearanceLightStatusBars = !isDarkTheme

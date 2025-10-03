@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dayvee.R
 import com.example.dayvee.ui.components.CustomCircularProgress
 import com.example.dayvee.ui.theme.CriticalRed
 import com.example.dayvee.ui.theme.DayVeeTheme
@@ -97,7 +96,7 @@ fun TaskItem(
                     modifier = Modifier.size(38.dp)
                 )
                 else -> Icon(
-                    imageVector = Icons.Filled.AccountBox,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_account_circle),
                     contentDescription = null,
                     tint = colorLabel,
                     modifier = Modifier.size(38.dp)
@@ -142,7 +141,7 @@ fun TaskItem(
                     modifier = Modifier.padding(vertical = 4.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_month),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.size(16.dp)
